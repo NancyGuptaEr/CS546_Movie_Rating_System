@@ -25,7 +25,7 @@ export const checkStr = (param, paramName) => {
     return param;
   };
   export const checkDate = (date, whatDate) => {
-    date = checkString(date, whatDate);
+    date = checkStr(date, whatDate);
     if (
       !date.match(/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[0-1])\/[12][0-9]{3}$/gim)
     )
@@ -44,7 +44,7 @@ export const checkStr = (param, paramName) => {
   };
   
   export const checkName = (param, paramName) => {
-    param = checkString(param, paramName);
+    param = checkStr(param, paramName);
     if (!param.match(/^[a-z]{0,10}( [a-z]{0,10}){1,2}$/gi))
       throw `${paramName} must consist of letters and 2-3 spaces`;
     return param;
