@@ -1,8 +1,9 @@
-import { checkString, checkDate, checkName } from "../helper.js";
+import { checkStr, checkDate, checkName } from "../helper.js";
 import { movies } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
+
 export const getMovie = async (movieId) => {
-  const id = checkString(movieId, "movieId");
+  const id = checkStr(movieId, "movieId");
   if (!ObjectId.isValid(id)) throw "the movieId is not valid!";
   const moviesCollection = await movies();
   const movieInfo = await moviesCollection.findOne({
@@ -46,7 +47,7 @@ export const addNewMovie = async (
   ageRestriction,
   thumbnail
 ) => {
-  title = checkString(title, "title");
+  title = checkStr(title, "title");
   if (!Array.isArray(genre)) throw "the type of genre must be array";
   releaseDate = checkDate(releaseDate, "releaseDate");
   director = checkName(director, "director");
@@ -90,7 +91,7 @@ export const addNewMovie = async (
 };
 
 export const remove = async (movieId) => {
-  const id = checkString(movieId, "movieId");
+  const id = checkStr(movieId, "movieId");
   if (!ObjectId.isValid(id)) throw "the movieId is not valid";
   const moviesCollection = await movies();
   const theMovie = await getMovie(id);
@@ -111,8 +112,8 @@ export const update = async (
   ageRestriction,
   thumbnail
 ) => {
-  const id = checkString(movieId, "movieId");
-  title = checkString(title, "title");
+  const id = checkStr(movieId, "movieId");
+  title = checkStr(title, "title");
   if (!Array.isArray(genre)) throw "the type of array must be array";
   releaseDate = checkDate(releaseDate, "releaseDate");
   if (typeof artists !== "object" || Array.isArray(artists))
