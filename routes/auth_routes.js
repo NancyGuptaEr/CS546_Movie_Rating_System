@@ -8,7 +8,7 @@ router
     .get(async (req, res) => {
         //code here for GET
         //Below code will render the register page
-        res.render('register', { authUser: req.session.user, title: 'register', hasError: false });
+        res.render('register', { title: 'register', hasError: false });
     })
     .post(async (req, res) => {
         //code here for POST
@@ -136,7 +136,7 @@ router
     .route('/login')
     .get(async (req, res) => {
         //code here for GET
-        res.render('login', { authUser: req.session.user, title: 'login', hasError: false, postData: "" });
+        res.render('login', {  title: 'login', hasError: false, postData: "" });
     })
     .post(async (req, res) => {
         //code here for POST
@@ -171,7 +171,7 @@ router
                 throw `Password cannot contain space.`;
             }
         } catch (e) {
-            return res.status(400).render("login", { authUser: req.session.user, title: 'login', hasError: true, error: e, postData });
+            return res.status(400).render("login", {title: 'login', hasError: true, error: e, postData });
         }
         try {
             const user = await authDataFuncs.loginUser(postData.emailAddressInput, postData.passwordInput);
