@@ -42,19 +42,18 @@ $(document).ready(function () {
       isValid = false;
     }
     try {
-      const actorsInput = $('#actors').val().trim();
-      if (actorsInput=== "") throw "actors must exist";
-      const actors = actorsInput
-        .split(",")
-        ?.map((e) => {
-          return checkName(e.trim(), e);
-        });
+      const actorsInput = $("#actors").val().trim();
+      if (actorsInput === "") throw "actors must exist";
+      const actors = actorsInput.split(",")?.map((e) => {
+        return checkName(e.trim(), e);
+      });
     } catch (error) {
       errorMessage += "format of actors is wrong.<br>";
       isValid = false;
     }
     try {
-      checkName($("#writer").val().trim(), "writer");
+      const writer = $("#writer").val().trim();
+      if (writer !== "") checkName(writer, "writer");
     } catch (error) {
       errorMessage += "format of writer is wrong.<br>";
       isValid = false;
@@ -89,7 +88,6 @@ $(document).ready(function () {
       $("#error-message").hide();
     }
   });
-
 
   $("#updateMovieForm").on("submit", function (e) {
     var isValid = true;
@@ -106,19 +104,18 @@ $(document).ready(function () {
       isValid = false;
     }
     try {
-      const actorsInput = $('#actors').val().trim();
-      if (actorsInput=== "") throw "actors must exist";
-      const actors = actorsInput
-        .split(",")
-        ?.map((e) => {
-          return checkName(e.trim(), e);
-        });
+      const actorsInput = $("#actors").val().trim();
+      if (actorsInput === "") throw "actors must exist";
+      const actors = actorsInput.split(",")?.map((e) => {
+        return checkName(e.trim(), e);
+      });
     } catch (error) {
       errorMessage += "format of actors is wrong.<br>";
       isValid = false;
     }
     try {
-      checkName($("#writer").val().trim(), "writer");
+      const writer = $("#writer").val().trim();
+      if (writer !== "") checkName(writer, "writer");
     } catch (error) {
       errorMessage += "format of writer is wrong.<br>";
       isValid = false;
@@ -156,37 +153,37 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  $('.delete-button').click(function (e) {
+  $(".delete-button").click(function (e) {
     e.preventDefault();
-    const movieId = $(this).data('movieid');
+    const movieId = $(this).data("movieid");
     $.ajax({
-      url: '/admin/' + movieId,
-      type: 'DELETE',
+      url: "/admin/" + movieId,
+      type: "DELETE",
       success: function (result) {
-        console.log('Movie deleted successfully');
+        console.log("Movie deleted successfully");
         window.location.reload();
       },
       error: function (error) {
-        console.error('Error deleting movie:', error);
-      }
+        console.error("Error deleting movie:", error);
+      },
     });
   });
 });
 
 $(document).ready(function () {
-  $('.delete-button').click(function (e) {
-      e.preventDefault();
-      const reviewId = $(this).data('reviewId');
-      $.ajax({
-          url: '/admin/flaggedReviews/' + reviewId,
-          type: 'DELETE',
-          success: function (result) {
-              console.log('Review deleted successfully');
-              window.location.reload();
-          },
-          error: function (error) {
-              console.error('Error deleting review:', error);
-          }
-      });
+  $(".deleteFlaggedReview-button").click(function (e) {
+    e.preventDefault();
+    const reviewId = $(this).data("reviewId");
+    $.ajax({
+      url: "/admin/flaggedReviews/" + reviewId,
+      type: "DELETE",
+      success: function (result) {
+        console.log("Review deleted successfully");
+        window.location.reload();
+      },
+      error: function (error) {
+        console.error("Error deleting review:", error);
+      },
+    });
   });
 });

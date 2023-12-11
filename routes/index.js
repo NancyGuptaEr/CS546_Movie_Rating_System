@@ -1,7 +1,7 @@
 import authRoutes from './auth_routes.js';
 import { adminMoviesRouter } from "./admin.js";
 const constructorMethod = (app) => {
-    app.use(authRoutes);
+    app.use('/',authRoutes);
     app.use("/admin", adminMoviesRouter);
     app.use("/login", authRoutes);
     //app.use('/users', userRoutes);

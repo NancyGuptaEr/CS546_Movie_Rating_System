@@ -1,14 +1,29 @@
 import { Router } from "express";
 import { checkNull, checkString, trimString } from "../helper.js";
 import { authDataFuncs } from "../data/index.js";
+
 const router = Router();
+
+router.route("/").get(async (req, res) => {
+  const url = req.originalUrl;
+  const user = req.session.user;
+  if (url === "/") {
+    if (!user) return res.redirect("/login");
+    if (req.session.user.role === "admin") {
+      return res.redirect("/admin");
+    } else if (req.session.user.role === "user") {
+      // return res.redirect("/protected");
+    }
+  }
+  return res.json({ error: "YOU SHOULD NOT BE HERE!" });
+});
 
 router
     .route('/register')
     .get(async (req, res) => {
         //code here for GET
         //Below code will render the register page
-        res.render('register', { title: 'register', hasError: false });
+        res.render('register', { authUser: req.session.user, title: 'register', hasError: false });
     })
     .post(async (req, res) => {
         //code here for POST
@@ -136,7 +151,7 @@ router
     .route('/login')
     .get(async (req, res) => {
         //code here for GET
-        res.render('login', {  title: 'login', hasError: false, postData: "" });
+        res.render('login', { authUser: req.session.user, title: 'login', hasError: false, postData: "" });
     })
     .post(async (req, res) => {
         //code here for POST
@@ -171,7 +186,7 @@ router
                 throw `Password cannot contain space.`;
             }
         } catch (e) {
-            return res.status(400).render("login", {title: 'login', hasError: true, error: e, postData });
+            return res.status(400).render("login", { authUser: req.session.user, title: 'login', hasError: true, error: e, postData });
         }
         try {
             const user = await authDataFuncs.loginUser(postData.emailAddressInput, postData.passwordInput);
@@ -188,16 +203,18 @@ router
         }
     });
 
-router.route('/error').get(async (req, res) => {
-    //code here for GET
-    return res.status(403).render("error", { authUser: req.session.user, title: 'error' });
+router.route("/error").get(async (req, res) => {
+  //code here for GET
+  return res
+    .status(403)
+    .render("error", { authUser: req.session.user, title: "error" });
 });
 
-router.route('/logout').get(async (req, res) => {
-    //code here for GET
-    req.session.destroy(() => {
-        console.log('session destroyed.');
-    });
-    res.redirect("/");
+router.route("/logout").get(async (req, res) => {
+  //code here for GET
+  req.session.destroy(() => {
+    console.log("session destroyed.");
+  });
+  res.redirect("/");
 });
 export default router;

@@ -11,10 +11,22 @@ const __dirname = dirname(__filename);
 const staticDir = express.static(__dirname + "/public");
 app.use("/public", staticDir);
 app.use(express.json());
+import session from "express-session";
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
+
+
+app.use(
+  session({
+    name: "AwesomeWebApp",
+    secret: "This is a secret.. shhh don't tell anyone",
+    saveUninitialized: false,
+    resave: false,
+    cookie: { maxAge: 1800000 },
+  })
+);
 
 configRoutes(app);
 app.listen(3000, () => {
