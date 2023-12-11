@@ -45,7 +45,7 @@ export const checkStr = (param, paramName) => {
   
   export const checkName = (param, paramName) => {
     param = checkStr(param, paramName);
-    if (!param.match(/^[a-z]{0,10}( [a-z]{0,10}){1,2}$/gi))
+    if (!param.match(/^[a-z]{0,25}( [a-z]{0,25}){1,2}$/gi))
       throw `${paramName} must consist of letters and 2-3 spaces`;
     return param;
   };

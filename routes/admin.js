@@ -11,7 +11,8 @@ import {
   getMoviesByFlaggedTimes,
   removeByFlaggedTimes,
 } from "../data/flaggedReviews.js";
-import { isAdminAuthenticated, isAuthenticated } from "../middleware.js";
+import { isAdminAuthenticated } from "../middleware.js";
+import xss from "xss";
 
 export const adminMoviesRouter = Router();
 
@@ -57,56 +58,52 @@ adminMoviesRouter
     ];
     res.render("uploadMovie", { allGenres });
   })
-  .post(
-    isAdminAuthenticated,
-    upload.single("image"),
-    async (req, res) => {
-      try {
-        const data = req.body;
-        if (!data) throw "input is required";
-        let {
-          title,
-          genre,
-          releaseDate,
-          director,
-          actors,
-          writer,
-          producer,
-          contentRating,
-        } = data;
-        const thumbnail = req.file ? "/uploads/" + req.file.filename : "";
-        title = checkStr(title, "title");
-        if (!Array.isArray(genre)) throw "the type of genre must be array";
-        releaseDate = checkDate(releaseDate, "releaseDate");
-        director = checkName(director, "director");
-        actors = checkStr(actors, "actors");
-        actors = actors.split(",")?.map((eachName) => {
-          eachName = checkName(eachName, eachName);
-          return eachName;
-        });
-        if (!Array.isArray(actors)) throw "the type of genre must be array";
-        if (writer !== "") writer = checkName(writer, "writer");
-        producer = checkName(producer, "producer");
-        const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
-        if (!allContentRatings.includes(contentRating))
-          throw "contentRating is not valid";
-        const newMovie = await adminMovies.addNewMovie(
-          title,
-          genre,
-          releaseDate,
-          director,
-          actors,
-          writer,
-          producer,
-          contentRating,
-          thumbnail
-        );
-        return res.redirect("/admin");
-      } catch (e) {
-        return res.status(400).json({ error: e.toString() });
-      }
+  .post(isAdminAuthenticated, upload.single("image"), async (req, res) => {
+    try {
+      const data = req.body;
+      if (!data) throw "input is required";
+      let {
+        title,
+        genre,
+        releaseDate,
+        director,
+        actors,
+        writer,
+        producer,
+        contentRating,
+      } = data;
+      const thumbnail = req.file ? "/uploads/" + req.file.filename : "";
+      title = checkStr(title, "title");
+      if (!Array.isArray(genre)) throw "the type of genre must be array";
+      releaseDate = checkDate(releaseDate, "releaseDate");
+      director = checkName(director, "director");
+      actors = checkStr(actors, "actors");
+      actors = actors.split(",")?.map((eachName) => {
+        eachName = checkName(eachName, eachName);
+        return eachName;
+      });
+      if (!Array.isArray(actors)) throw "the type of genre must be array";
+      if (writer !== "") writer = checkName(writer, "writer");
+      producer = checkName(producer, "producer");
+      const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
+      if (!allContentRatings.includes(contentRating))
+        throw "contentRating is not valid";
+      const newMovie = await adminMovies.addNewMovie(
+        title,
+        genre,
+        releaseDate,
+        director,
+        actors,
+        writer,
+        producer,
+        contentRating,
+        thumbnail
+      );
+      return res.redirect("/admin");
+    } catch (e) {
+      return res.status(400).json({ error: e });
     }
-  );
+  });
 
 adminMoviesRouter
   .route("/:movieId")
@@ -239,7 +236,7 @@ adminMoviesRouter.post(
       );
       if (newMovie) return res.redirect("/admin");
     } catch (e) {
-      res.status(400).json({ error: e.toString() });
+      res.status(400).json({ error: e });
     }
   }
 );
