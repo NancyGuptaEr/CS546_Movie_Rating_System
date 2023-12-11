@@ -1,4 +1,9 @@
 import * as authFuncs from './auth.js';
-export const authDataFuncs = authFuncs;
 import * as adminMovies from "./adminMovie.js";
-export { adminMovies };
+import movieListings from "./movie_listing_page.js"
+
+export const authDataFuncs = authFuncs;
+export const movieListingData = movieListings;
+export { adminMovies};
+
+
