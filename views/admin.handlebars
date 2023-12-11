@@ -22,10 +22,12 @@
           <img src="{{this.thumbnailUrl}}" class="card-img-top" alt="{{this.thumbnailUrl}}"
             style="width: auto; height: 260px; object-fit: cover;">
           <div class="card-body text-center">
-            <h5 class="card-title">{{this.movieName}}</h5>
+            <h5 class="card-title">title:{{this.movieName}}</h5>
             <p class="card-text">Director: {{this.director}}</p>
             <p class="card-text">Actors: {{this.actors}}</p>
             <p class="card-text">Genres: {{this.genre}}</p>
+            <p class="card-text">overallRating:{{this.overall_rating}}</p>
+            <p class="card-text">contentRating:{{this.contentRating}}</p>
             <div class="d-flex justify-content-center">
               <a href="/admin/update/{{this._id}}"
                 style="margin-right: 10px; color: blue; text-decoration: underline;">Update</a>

@@ -57,24 +57,26 @@
                     value="{{movie.releaseDate}}" required />
             </div>
 
+
             <div class="mb-3">
-                <label>Age Restriction:</label><br />
-                <input type="radio" id="ageRestrictionTrue" name="ageRestriction" value="true" {{#if
-                    movie.ageRestriction}}checked{{/if}} />
-                <label for="ageRestrictionTrue">True</label>
-                <input type="radio" id="ageRestrictionFalse" name="ageRestriction" value="false" {{#unless
-                    movie.ageRestriction}}checked{{/unless}} />
-                <label for="ageRestrictionFalse">False</label>
+                <label for="contentRating">contentRating:</label>
+                <select name="contentRating" id="contentRating">
+                    <option value="G" {{#if movie.ratingOption.G}}selected{{/if}}>G</option>
+                    <option value="PG" {{#if movie.ratingOption.PG}}selected{{/if}}>PG</option>
+                    <option value="PG-13" {{#if movie.ratingOption.PG13}}selected{{/if}}>PG-13</option>
+                    <option value="R" {{#if movie.ratingOption.R}}selected{{/if}}>R</option>
+                    <option value="NC-17" {{#if movie.ratingOption.NC17}}selected{{/if}}>NC-17</option>
+                </select>
             </div>
 
             <div class="mb-3">
-                    <label for="genre" class="form-label">Genres (press command to select more genres):</label>
-                    <select class="form-select" name="genre[]" id="genre" multiple>
-                        {{#each genresWithSelection}}
-                        <option value="{{this.name}}" {{#if this.selected}}selected{{/if}}>{{this.name}}
-                        </option>
-                        {{/each}}
-                    </select>
+                <label for="genre" class="form-label">Genres (press command to select more genres):</label>
+                <select class="form-select" name="genre[]" id="genre" multiple>
+                    {{#each genresWithSelection}}
+                    <option value="{{this.name}}" {{#if this.selected}}selected{{/if}}>{{this.name}}
+                    </option>
+                    {{/each}}
+                </select>
             </div>
 
             <div class="mb-3">
@@ -92,4 +94,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
