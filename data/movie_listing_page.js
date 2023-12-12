@@ -1,8 +1,44 @@
 import { movies, users } from "../config/mongoCollections.js";
+import { ObjectId } from "mongodb";
 import * as please from '../helper.js'
 /////////////  ALL OF THIS IS FOR GETTING MOVIES FOR THE MOVIE LISTING PAGE  ////////////////
 
 let exportedMethods = {
+
+    async getWatchList(userId){
+        userId = please.checkStr(userId);
+
+        if(!ObjectId.isValid(userId)){
+            throw `User Id isn't the valid object ID`;
+        }
+
+        const userData = await users();
+        const movieData = await movies();
+        
+        const watchListProjection = {_id: 0, watchList: 1};
+        const movieListProjection = {_id: 1, title: 1, thumbnail: 1, overall_rating: 1};
+
+        let userInfo = await userData.find({_id: new ObjectId(userId)}).project(watchListProjection).toArray();
+
+        userInfo = userInfo[0].watchList;
+        console.log(`printing userinfo:`);
+        console.log(userInfo);
+        let returnWatchListObject = {};
+        
+        for (let watchList in userInfo){
+            console.log(`watchlist name: ${watchList}`);
+            returnWatchListObject[watchList] = [];
+            for (let i=0; i < userInfo[watchList].length; i++){
+                let movieId = userInfo[watchList][i];
+                let movieInfo = await movieData.find({_id: new ObjectId(movieId)}).project(movieListProjection).toArray()
+                movieInfo = movieInfo[0];
+                returnWatchListObject[watchList].push(movieInfo);
+            }
+        }
+        console.log(`printing returnmovieovject:`);
+        console.log(returnWatchListObject);
+        return returnWatchListObject;
+    },
 
     async getMoviesByGenreWithoutLogin(){
 
@@ -28,7 +64,7 @@ let exportedMethods = {
         }
         uniqueGenres = Array.from(uniqueGenres); //Here we have 3 random and unique genres in the array
         console.log(`Random unique genres are: ${uniqueGenres}`);
-        const movieListProjection = {_id: 0, title: 1, thumbnail: 1, overall_rating: 1};
+        const movieListProjection = {_id: 1, title: 1, contentRating: 1, thumbnail: 1, overall_rating: 1};
 
         let MoviesObject = {};
         let returnMoviesArray = [];
@@ -49,31 +85,24 @@ let exportedMethods = {
         // console.log(returnMoviesArray); // till here we have random genre and movies with
         // console.log(`__________________________________`);
         // console.log(movieList);
-        console.log(returnMoviesArray);
-        console.log(`_______________________________________________________`);
+        // console.log(returnMoviesArray);
+        // console.log(`_______________________________________________________`);
         return returnMoviesArray;
 
     },
 
-    async getMoviesWithLogin(emailAddress){
-
-        emailAddress = please.checkStr(emailAddress, "Email Address");
-        emailAddress = emailAddress.toLowerCase();
-
-        let match;
-        if (emailAddress.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/) !== null)
-            match = emailAddress.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/)[0];
-        if (match === null || match !== emailAddress) {
-            throw 'Email address must be in a valid email format.';
+    async getMoviesWithLogin(userId){
+        
+        userId = please.checkStr(userId, "User ID");
+        if(!ObjectId.isValid(userId)){
+            throw `User ID isn't a valid object ID`;
         }
-
-        // console.log(emailAddress);
         
         const userData = await users();
-        const genreProjection = {_id : 0, preferGenre: 1, maxContentRating: 1}
-        let userPreference = await userData.find({emailAddress : emailAddress}).project(genreProjection).toArray(); //First we'll need to get user genres 
-        // console.log(`User Info: `);
-        // console.log(userPreference);
+        const genreProjection = {_id : 1, preferGenre: 1, maxContentRating: 1}
+        let userPreference = await userData.find({_id: new ObjectId(userId)}).project(genreProjection).toArray(); //First we'll need to get user genres 
+        console.log(`User Info: `);
+        console.log(userPreference);
         if(userPreference.length === 0 ){
             throw `User not found`;
         }
@@ -111,7 +140,7 @@ let exportedMethods = {
         console.log(`content ratings for user: ${allowedContentRatings}`);
     
         const movieData = await movies();
-        const movieListProjection = {_id: 0, title: 1, thumbnail: 1, contentRating: 1, overall_rating: 1};
+        const movieListProjection = {_id: 1, title: 1, thumbnail: 1, contentRating: 1, overall_rating: 1};
         let movieListByGenre = {};
 
         for (let i = 0; i < preferedGenres.length; i++){//here we go through users prefered genre and push only movies which fall under users max content rating
@@ -128,26 +157,28 @@ let exportedMethods = {
     
         ///////////// From here we'll need to have movies from users watchlist ///////////////////////////
 
-        const watchlistProjection = {_id: 0, watchList: 1}
-        let watchlist = await userData.find({emailAddress: emailAddress}).project(watchlistProjection).toArray();
-        watchlist = watchlist[0].watchList; //this is an object, here we have all the watchlists of the user
+        // const watchlistProjection = {_id: 1, watchList: 1}
+        // let watchlist = await userData.find({emailAddress: emailAddress}).project(watchlistProjection).toArray();
+        // watchlist = watchlist[0].watchList; //this is an object, here we have all the watchlists of the user
         //structure of watchlist object   {
         //                                 NameOfWatchList1:[movies..],
         //                                 NameOfWatchList2:[movies..]
     //                                 }
+        const watchlist = await this.getWatchList(userId);
+    //    console.log(`____________________________________`) ;
     // console.log(watchlist);
-        let completeWatchList = {};
-        for (let watchListName in watchlist){
-            // console.log(`${watchListName}:   `);
-            let movieList = [];
-            for (let i = 0; i < watchlist[watchListName].length; i++){
-                // console.log(watchlist[watchListName][i]);
-                let movieName = watchlist[watchListName][i];
-                const movieInfo = await movieData.find({title: movieName}).project(movieListProjection).toArray();
-                movieList.push(movieInfo[0]);
-            }
-            completeWatchList[watchListName] = movieList;
-        }
+        // let completeWatchList = {};
+        // for (let watchListName in watchlist){
+        //     // console.log(`${watchListName}:   `);
+        //     let movieList = [];
+        //     for (let i = 0; i < watchlist[watchListName].length; i++){
+        //         // console.log(watchlist[watchListName][i]);
+        //         let movieName = watchlist[watchListName][i];
+        //         const movieInfo = await movieData.find({title: movieName}).project(movieListProjection).toArray();
+        //         movieList.push(movieInfo[0]);
+        //     }
+        //     completeWatchList[watchListName] = movieList;
+        // }
         // console.log(`printing complete watchlist: `);
         // console.log(completeWatchList);
         //////////////  Here we'll get top rated rated movies for preferred user genres  ////////////////
@@ -201,25 +232,99 @@ let exportedMethods = {
         // console.log(`printing movies with Genre`)
         // console.log(MoviesWithGenre);
         ////////////// Below is for Top 10 on CineRatings  //////////////////////////////////////////
+        let topMoviesObj = {};
 
         const topMoviesList = await movieData.aggregate([{$match: {contentRating: {$in: allowedContentRatings}}},{$sort: {overall_rating: -1}},{$limit: 10}]).project(movieListProjection).toArray();
+        topMoviesObj['Top 10 on CineRatings'] = topMoviesList;
         // console.log(`top 10 on cineratings: `)
         // console.log(topMoviesList);
         retrunArray.push(MoviesWithGenre);
         retrunArray.push(topPicksForUser);
-        retrunArray.push(completeWatchList);
-        retrunArray.push(topMoviesList);
+        retrunArray.push(watchlist);
+        retrunArray.push(topMoviesObj);
 
-        // BELOW IS THE STRUCTURE OF RETURN ARRAY, EVERY THING IS ACCEPT HAS CONTENT RATING APPLIED
+        // BELOW IS THE STRUCTURE OF RETURN ARRAY, EVERY THING ACCEPT watchlist HAS CONTENT RATING APPLIED
 
         //structure of returnArray  [ {movieGenre:[movies]},   //movies with 3 randomGenres
         //                          [{movie1,movie2,etc}],     //movies recommended based on user genres
         //                          {watchListName:[movies]},  //movies from watchlist
         //                          [movies] ]                 //top 10 on cineratings
-
-        console.log(retrunArray);
         console.log(`_______________________________________________________`);
+        console.log(retrunArray);
+        
         return retrunArray;
+    },
+    async checkWatchListExists(watchListName, userId){
+        watchListName = please.checkStr(watchListName, "Watch List Name");
+        userId = please.checkStr(userId);
+
+        if(!ObjectId.isValid(userId)){
+            throw `User ID isn't valid object ID`;
+        }
+
+        const userData = await users();
+        const userInfo = await userData.findOne({_id: new ObjectId(userId),[`watchList.${watchListName}`]: {$exists: true}});
+        // console.log(`userInfo =:`);
+        // console.log(userInfo);
+        if(!userInfo){
+            return false;
+        }
+        else{
+            return true;
+        }
+    },
+    async addWatchList(watchListName, userId){
+        watchListName = please.checkStr(watchListName, "Watch List Name");
+        userId = please.checkStr(userId, "User ID");
+
+        if(!ObjectId.isValid(userId)){
+            throw `User ID isn't valid object ID`;
+        }
+        
+        const userData = await users();
+        const userInfo = await userData.findOneAndUpdate({_id: new ObjectId(userId)},
+        {$set: {[`watchList.${watchListName}`]:[]}},
+        {returnDocument: 'after'});
+        console.log(userInfo);
+        if(!userInfo) {
+            throw `There was a problem adding new watch list`
+        }
+        return true;
+    },
+    async addMovieToWatchList(movieId, watchListName, userId){
+
+            movieId = please.checkStr(movieId, "Movie ID");
+            userId = please.checkStr(userId, "user ID");
+            watchListName = please.checkStr(watchListName, "Watch List Name");
+
+           if (!ObjectId.isValid(movieId)){
+            throw  `Object id for movie is invalid`;
+           }
+           if (!ObjectId.isValid(userId)){
+            throw  `Object id for User is invalid`;
+           }
+           const userData = await users();
+           const movieData = await movies();
+           const userInfo = await userData.findOne({_id: new ObjectId(userId)});
+           const movieInfo = await movieData.findOne({_id: new ObjectId(movieId)});
+
+
+           if(!userInfo){
+                throw `User Doesn't exists`;
+           }
+           if(!movieInfo){
+                throw `Movie doesn't exists`;
+           }
+           
+           const watchListInserted = await userData.findOneAndUpdate(
+                                    {_id: new ObjectId(userId)},
+                                    {$push: {[`watchList.${watchListName}`]: new ObjectId(movieId)}},
+                                    {returnDocument: 'after'});
+            
+            if(!watchListInserted){
+                throw `there was a problem inserting the movie to the watchlist`
+            }
+            console.log(watchListInserted);
     }
 }
 

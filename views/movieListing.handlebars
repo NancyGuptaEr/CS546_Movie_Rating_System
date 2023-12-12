@@ -1,0 +1,89 @@
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/css/movie_listing.css">
+
+<body>
+<div class="container">
+    <!-- Genre Section -->
+    {{#each Genres}}
+    <div class="genre-section section">
+        <h2 class="section-title">{{@key}}</h2>
+        <div class="d-flex flex-row movie-list">
+            {{#each this}}
+            <div class="movie">
+                <a href="/movie/{{_id}}">
+                <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
+                <p>Title: {{title}}</p>
+                <p>Rating: {{overall_rating}}</p>
+                <p>MPA: {{contentRating}}</p>
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    {{/each}}
+
+    <!-- Recommended Movies Section -->
+    {{#if recommendedMovies}}
+    <div class="recommended-section section">
+        <h2 class="section-title">You might like:</h2>
+        <div class="d-flex flex-row movie-list">
+            {{#each recommendedMovies}}
+            <div class="movie">      
+                <a href="/movie/{{_id}}"></a>
+                <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">     
+                <p>Title: {{title}}</p>
+                <p>Rating: {{overall_rating}}</p>
+                <p>MPA: {{contentRating}}</p>
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    <!-- User Watchlist Movies Section -->
+    {{#if UserWatchListMovies}}
+    <div class="watchlist-section section">
+        <h2 class="section-title">Your Watchlists:</h2>
+        {{#each UserWatchListMovies}}
+        <div class="genre-section section">
+            <h2 class="section-title">{{@key}}</h2>
+            <div class="d-flex flex-row movie-list">
+                {{#each this}}
+                <div class="movie">    
+                    <a href="/movie/{{_id}}">      
+                    <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
+                    <p>Title: {{title}}</p>
+                    <p>Rating: {{overall_rating}}</p>
+                    <p>MPA: {{contentRating}}</p>
+                    </a>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+
+    <!-- Top 10 Movies Section -->
+    {{#each Top10}}
+    <div class="top10-section section">
+        <h2 class="section-title">{{@key}}</h2>
+        <div class="d-flex flex-row movie-list">
+            {{#each this}}
+            <div class="movie">
+                <a href="/movie/{{_id}}">
+                <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
+                <p>Title: {{title}}</p>
+                <p>Rating: {{overall_rating}}</p>
+                <p>MPA: {{contentRating}}</p>
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    {{/each}}
+</div>
+</body>
+</html>

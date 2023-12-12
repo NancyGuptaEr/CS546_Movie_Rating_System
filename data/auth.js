@@ -178,5 +178,5 @@ export const loginUser = async (emailAddress, password) => {
   if (!isSame) {
     throw `Either the email address or password is invalid.`;
   }
-  return { emailAddress: exist.emailAddress, profileImage: exist.profileImage, age: exist.age, watchList: exist.watchList, moviesReviewed: exist.moviesReviewed, isAdmin: exist.isAdmin, preferGenre: exist.preferGenre };
+  return {_id: exist._id, profileImage: exist.profileImage, isAdmin: exist.isAdmin };
 };
