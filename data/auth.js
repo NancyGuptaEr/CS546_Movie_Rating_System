@@ -7,13 +7,16 @@ export const registerUser = async (
   password,
   age,
   role,
-  preferGenre
+  preferGenre,
+  preferContent
 ) => {
   checkNull(emailAddress, 'emailAddress');
   checkNull(password, 'Password');
   checkNull(age, 'Age');
   checkNull(role, 'role');
   checkString(role, 'role');
+  checkNull(preferContent, 'Prefer Content');
+  checkString(preferContent, 'Prefer Content');
   if (role === 'user') {
     let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
     checkNull(preferGenre, 'Prefer Genre');
@@ -32,7 +35,7 @@ export const registerUser = async (
       preferGenre = [];
       preferGenre.push(temp);
     }
-    else{
+    else {
       if (!Array.isArray(preferGenre)) {
         throw `Prefer genre must be an array.`;
       }
@@ -104,6 +107,11 @@ export const registerUser = async (
   if (role !== 'admin' && role !== 'user') {
     throw `Role can either have admin or user as its value.`;
   }
+  preferContent = preferContent.toLowerCase();
+  preferContent = trimString(preferContent);
+  if (preferContent !== 'g(general audience)' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'pg' && preferContent !== 'r' && preferContent !== '18+(nc 17)') {
+    throw `Prefer Content can either have 'G', 'PG', 'PG-13', 'R', 'NC-17' as the value.`;
+  }
   let isAdmin;
   if (role === 'admin')
     isAdmin = true;
@@ -118,7 +126,8 @@ export const registerUser = async (
     watchList: {},
     moviesReviewed: [],
     isAdmin,
-    preferGenre: preferGenre
+    preferGenre: preferGenre,
+    maxContentRating: preferContent
   }
   const usercollection = await users();
   const exist = await usercollection.findOne({ emailAddress });
@@ -171,9 +180,3 @@ export const loginUser = async (emailAddress, password) => {
   }
   return { emailAddress: exist.emailAddress, profileImage: exist.profileImage, age: exist.age, watchList: exist.watchList, moviesReviewed: exist.moviesReviewed, isAdmin: exist.isAdmin, preferGenre: exist.preferGenre };
 };
-// export const getUser = async (userId) => {
-//     //Implement Code here
-//     const usercollection = await users();
-//     const user = await usercollection.findOne({ _id: userId });
-//     return user;
-// };

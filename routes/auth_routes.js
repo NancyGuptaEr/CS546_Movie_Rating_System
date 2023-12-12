@@ -8,7 +8,7 @@ router
     .get(async (req, res) => {
         //code here for GET
         //Below code will render the register page
-        res.render('register', { authUser: req.session.user, title: 'register', hasError: false });
+        res.render('register', { authUser: "", title: 'register', hasError: false });
     })
     .post(async (req, res) => {
         //code here for POST
@@ -21,6 +21,7 @@ router
             checkNull(postData.confirmPasswordInput, 'Confirm password');
             checkNull(postData.ageInput, 'Age');
             checkNull(postData.roleInput, 'Role');
+            checkNull(postData.preferContentInput, 'Prefer Content');
             if (postData.roleInput === 'user') {
                 let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
                 checkNull(postData.preferGenreInput, 'Prefer Genre')
@@ -62,6 +63,8 @@ router
             postData.confirmPasswordInput = trimString(postData.confirmPasswordInput);
             checkString(postData.roleInput, 'role');
             postData.role = trimString(postData.role);
+            checkString(postData.preferContentInput, 'Prefer Content');
+            postData.preferContentInput = trimString(postData.preferContentInput);
             let match;
             postData.emailAddressInput = postData.emailAddressInput.toLowerCase();
             if (postData.emailAddressInput.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/) !== null)
@@ -90,6 +93,10 @@ router
             postData.roleInput = postData.roleInput.toLowerCase();
             if (postData.roleInput !== 'admin' && postData.roleInput !== 'user') {
                 throw `Role can either have admin or user as its value.`;
+            }
+            postData.preferContentInput = postData.preferContentInput.toLowerCase();
+            if (postData.preferContentInput !== 'g(general audience)' && postData.preferContentInput !== 'pg' && postData.preferContentInput !== 'pg-13' && postData.preferContentInput !== 'pg' && postData.preferContentInput !== 'r' && postData.preferContentInput !== '18+(nc 17)') {
+                throw `Prefer Content can either have 'G', 'PG', 'PG-13', 'R', 'NC-17' as the value.`;
             }
             if (typeof postData.ageInput === 'string') {
                 postData.ageInput = trimString(postData.ageInput);
@@ -122,7 +129,7 @@ router
             return res.status(400).render("register", { authUser: req.session.user, title: 'register', hasError: true, error: e, postData });
         }
         try {
-            const success = await authDataFuncs.registerUser(postData.emailAddressInput, postData.passwordInput, postData.ageInput, postData.roleInput, postData.preferGenreInput);
+            const success = await authDataFuncs.registerUser(postData.emailAddressInput, postData.passwordInput, postData.ageInput, postData.roleInput, postData.preferGenreInput, postData.preferContentInput);
             if (!success) {
                 return res.status(500).render("register", { authUser: req.session.user, title: 'register', hasError: true, error: "Internal Server Error", postData });
             }
@@ -136,7 +143,7 @@ router
     .route('/login')
     .get(async (req, res) => {
         //code here for GET
-        res.render('login', { authUser: req.session.user, title: 'login', hasError: false, postData: "" });
+        res.render('login', { authUser: "", title: 'login', hasError: false, postData: "" });
     })
     .post(async (req, res) => {
         //code here for POST

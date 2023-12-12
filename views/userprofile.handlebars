@@ -1,20 +1,32 @@
 <main class="container mt-4">
-    <h2>Sign up</h2>
-    <form action="/register" method="post" id="registration-form" class="mt-3">
+    <h2>User Profile</h2>
+    <div class="mb-3">
+        {{#if user.profilePic}}
+        <img src="{{user.profilePic}}" class="img-thumbnail" alt="Profile picture">
+        {{else}}
+        <img src="../public/images/user.png" class="img-thumbnail" alt="Profile picture">
+        {{/if}}
+    </div>
+    <form action="enter appropriate route hear" method="post" id="userinfo-form" class="mt-3">
+        <div class="mb-3">
+            <label for="profilePicInput" class="form-label">Profile Picture</label>
+            <input type="file" id="profilePicInput" name="profilePicInput" class="form-control" accept="image/*">
+            </div>
+        </div>
         <div class="mb-3">
             <label for="emailAddressInput" class="form-label">Email address</label>
-            <input type="email" id="emailAddressInput" name="emailAddressInput" class="form-control" value="{{postData.emailAddressInput}}">
+            <input type="email" id="emailAddressInput" name="emailAddressInput" class="form-control" value="{{user.emailAddressInput}}" disabled>
             <div class="form-text" id="email-info" hidden>Email field value must be in a proper email address format
             </div>
         </div>
         <div class="mb-3">
             <label for="ageInput" class="form-label">Age</label>
-            <input type="number" id="ageInput" name="ageInput" class="form-control" value="{{postData.ageInput}}">
+            <input type="number" id="ageInput" name="ageInput" class="form-control" value="{{user.ageInput}}" disabled>
             <div class="form-text" id="age-info" hidden>Age field value must be a whole number between 18 and 100</div>
         </div>
         <div class="mb-3">
             <label class="form-label" for="passwordInput">Password</label>
-            <input type="password" id="passwordInput" name="passwordInput" class="form-control" value="{{postData.passwordInput}}">
+            <input type="password" id="passwordInput" name="passwordInput" class="form-control" value="{{user.passwordInput}}">
             <div class="form-text" id="password-info" hidden>
                 <ul>
                     <li>Password must be at least 8 characters long.</li>
@@ -27,12 +39,12 @@
         </div>
         <div class="mb-3">
             <label class="form-label" for="confirmPasswordInput">Confirm Password</label>
-            <input type="password" id="confirmPasswordInput" name="confirmPasswordInput" class="form-control" value="{{postData.confirmPasswordInput}}">
+            <input type="password" id="confirmPasswordInput" name="confirmPasswordInput" class="form-control" value="{{user.confirmPasswordInput}}">
             <div class="form-text" id="confirmpassword-info" hidden>Confirm password and password must match.</div>
         </div>
         <div class="mb-3">
             <label class="form-label" for="roleInput">Select role</label>
-            <select class="form-select" name="roleInput" id="roleInput">
+            <select class="form-select" name="roleInput" id="roleInput" disabled>
                 <option value="admin">Admin</option>
                 <option value="user">User</option>
             </select>
@@ -40,8 +52,8 @@
             </div>
         </div>
         <div class="mb-3">
-            <label class="form-label" for="preferGenreInput" id="preferGenreLabel" hidden>Select genres</label>
-            <select class="form-select" name="preferGenreInput" id="preferGenreInput" multiple hidden>
+            <label class="form-label" for="preferGenreInput" id="preferGenreLabel">Select genres</label>
+            <select class="form-select" name="preferGenreInput" id="preferGenreInput" multiple>
                 <option value="action">Action</option>
                 <option value="adventure">Adventure</option>
                 <option value="comedy">Comedy</option>
@@ -67,9 +79,6 @@
             <label class="form-label" for="preferContentInput" id="preferContentLabel">Set preferred content</label>
             <select class="form-select" name="preferContentInput" id="preferContentInput">
                 <option value="G">G(General Audience)</option>
-                <option value="G">PG</option>
-                <option value="G">PG-13</option>
-                <option value="G">R</option>
                 <option value="NC 17">18+(NC 17)</option>
             </select>
             <div class="form-text" id="content-info" hidden>
@@ -82,5 +91,4 @@
     {{#if hasError}}
     <p class="error">{{error}}</p>
     {{/if}}
-    <a href="/login">Already have an account? Click here to log-in</a>
 </main>
