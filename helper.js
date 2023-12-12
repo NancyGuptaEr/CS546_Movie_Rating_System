@@ -42,7 +42,6 @@ export const checkStr = (param, paramName) => {
       throw `${whatDate} is invalid`;
     return date;
   };
-  
   export const checkName = (param, paramName) => {
     param = checkStr(param, paramName);
     if (!param.match(/^[a-z]{0,25}( [a-z]{0,25}){1,2}$/gi))
