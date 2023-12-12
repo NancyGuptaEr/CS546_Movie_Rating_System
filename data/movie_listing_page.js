@@ -7,9 +7,10 @@ let exportedMethods = {
     async getMoviesByGenreWithoutLogin(){
 
         const movieData = await movies();
-        const genreList = await movieData.distinct('Genre');
-        // console.log(`All genres in the collection: ${genreList}`);
-        
+        const genreList = await movieData.distinct('genre');
+        console.log(`All genres in the collection:`);
+        console.log(genreList);
+    
         function chooseRandom(Array){
             // console.log(`overall Array length = :${Array.length}`);  
             const randomChoice = Math.floor(Math.random()*10) % Array.length;
@@ -25,48 +26,71 @@ let exportedMethods = {
             // console.log(`newGenre=: ${newGenre}`);
             uniqueGenres.add(newGenre);
         }
-        uniqueGenres = Array.from(uniqueGenres);
-        const movieListProjection = {_id: 0, Thumbnail: 1, Title: 1, overall_rating: 1};
-        let returnMovieObject = {};
+        uniqueGenres = Array.from(uniqueGenres); //Here we have 3 random and unique genres in the array
+        console.log(`Random unique genres are: ${uniqueGenres}`);
+        const movieListProjection = {_id: 0, title: 1, thumbnail: 1, overall_rating: 1};
 
-        for (let i = 0; i < uniqueGenres.length; i++){
-            const movieList = await movieData.find({Genre: uniqueGenres[i]}).project(movieListProjection).limit(10).toArray();
-            returnMovieObject[uniqueGenres[i]] = movieList;
+        let MoviesObject = {};
+        let returnMoviesArray = [];
+        let MoviesWithGenre = {}
+        const topMoviesList = await movieData.find().sort({overall_rating: -1}).project(movieListProjection).limit(10).toArray();
+        MoviesObject['Top 10 on CineRatings'] = topMoviesList;
+        returnMoviesArray.push(MoviesObject); // This will push top rated movies to the array forming first section of the page
+
+        for (let i = 0; i < uniqueGenres.length; i++){// here we find movies for the genres present in uniqueGenres
+            const movieList = await movieData.find({genre: uniqueGenres[i]}).project(movieListProjection).limit(10).toArray();
+            MoviesWithGenre[uniqueGenres[i]] = movieList;
         }
+        returnMoviesArray.push(MoviesWithGenre);//Now we push the uniqueGenre movies to the array forming second section of the page
 
-        // console.log(returnMovieObject); // till here we have random genre and movies with
-
-        return returnMovieObject;
+        //Structure of returnMoviesArray [{movies with highest ratings},{movies from 3 unique random genres}]
+        //                                          0th position^                    1st position^
+        
+        // console.log(returnMoviesArray); // till here we have random genre and movies with
+        // console.log(`__________________________________`);
+        // console.log(movieList);
+        return returnMoviesArray;
 
     },
 
-    async getMoviesWithLogin(userName){
+    async getMoviesWithLogin(emailAddress){
 
-        userName = please.checkStr(userName, "User Name");
-        console.log(userName);
-        return;
+        emailAddress = please.checkStr(emailAddress, "Email Address");
+        emailAddress = emailAddress.toLowerCase();
+
+        let match;
+        if (emailAddress.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/) !== null)
+            match = emailAddress.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/)[0];
+        if (match === null || match !== emailAddress) {
+            throw 'Email address must be in a valid email format.';
+        }
+
+        // console.log(emailAddress);
+        
         const userData = await users();
-        const genreProjection = {_id : 0, Age: 1, preferGenre: 1}
-        let userPreference = await userData.find({userName : userName}).project(genreProjection).toArray(); //First we'll need to get user genres 
-        // console.log(`Prefered genres of user: `);
+        const genreProjection = {_id : 0, preferGenre: 1, maxContentRating: 1}
+        let userPreference = await userData.find({emailAddress : emailAddress}).project(genreProjection).toArray(); //First we'll need to get user genres 
+        // console.log(`User Info: `);
         // console.log(userPreference);
+        if(userPreference.length === 0 ){
+            throw `User not found`;
+        }
+        
         const preferedGenres = userPreference[0].preferGenre; // here preferedGenres contains all the Genres that user loves
-        const minAge = userPreference[0].Age;
+        const maxContentRating = userPreference[0].maxContentRating;
         // console.log(`age of user: ${minAge}`);
         const contentRatings = ['G','PG','PG-13','R','NC-17'];
-        const minAgeContentRating = [1,1,13,17,18];
         
-
-        function returnContentRatings(minimumAge){
+        function returnContentRatings(maxContentRating){
             // console.log(`minimum age content for the user: ${minimumAge}`);
             let contentRating = [];
             let index = 0;
 
-            for (let i=0 ; i < minAgeContentRating.length; i++){
-                if(minAgeContentRating[i] >= minimumAge){
+            for (let i=0 ; i < contentRatings.length; i++){
+                if(contentRatings[i] === maxContentRating){
                     
                     index = i;
-                    // console.log(`max age limit is at location: ${i}`);
+                    console.log(`max age limit is at location: ${i}`);
                     break;
                 }
                 else{
@@ -74,21 +98,22 @@ let exportedMethods = {
                 }
             }
 
-            for (let j = 0 ; j < index; j++ ){
+            for (let j = 0 ; j <= index; j++ ){
                 contentRating.push(contentRatings[j]);
             }
             return contentRating;
         }
-        const allowedContentRatings = returnContentRatings(minAge);
+        const allowedContentRatings = returnContentRatings(maxContentRating);//here we have a array for all content ratings that are legal to user
 
-        // console.log(`user preferedGenres are: ${preferedGenres}`);
-        // console.log(`content ratings for user: ${allowedContentRatings}`);
+        console.log(`user preferedGenres are: ${preferedGenres}`);
+        console.log(`content ratings for user: ${allowedContentRatings}`);
+    
         const movieData = await movies();
-        const movieListProjection = {_id: 0, Thumbnail: 1, Title: 1, overall_rating: 1};
+        const movieListProjection = {_id: 0, title: 1, thumbnail: 1, contentRating: 1, overall_rating: 1};
         let movieListByGenre = {};
 
-        for (let i = 0; i < preferedGenres.length; i++){
-            const movieList = await movieData.find({Genre: preferedGenres[i], contentRating: {$in: allowedContentRatings}}).project(movieListProjection).limit(10).toArray();
+        for (let i = 0; i < preferedGenres.length; i++){//here we go through users prefered genre and push only movies which fall under users max content rating
+            const movieList = await movieData.find({genre: preferedGenres[i], contentRating: {$in: allowedContentRatings}}).project(movieListProjection).limit(10).toArray();
             const genre = preferedGenres[i]
             if(movieList.length != 0){
                 movieListByGenre[genre] = movieList;
@@ -98,32 +123,91 @@ let exportedMethods = {
         }
         // console.log(`Below is the movie list`);
         // console.log(movieListByGenre); // Till here we have movies by user genres
+    
+        ///////////// From here we'll need to have movies from users watchlist ///////////////////////////
 
-        ///////////// From here we'll need to have movies from users watchlist
-        const watchlistProjection = {_id: 0, watchlist: 1}
-        let watchlist = await userData.find({userName: userName}).project(watchlistProjection).toArray();
-        watchlist = watchlist[0].watchlist;
+        const watchlistProjection = {_id: 0, watchList: 1}
+        let watchlist = await userData.find({emailAddress: emailAddress}).project(watchlistProjection).toArray();
+        watchlist = watchlist[0].watchList; //this is an object, here we have all the watchlists of the user
+        //structure of watchlist object   {
+        //                                 NameOfWatchList1:[movies..],
+        //                                 NameOfWatchList2:[movies..]
+    //                                 }
+    // console.log(watchlist);
+        let completeWatchList = {};
+        for (let watchListName in watchlist){
+            // console.log(`${watchListName}:   `);
+            let movieList = [];
+            for (let i = 0; i < watchlist[watchListName].length; i++){
+                // console.log(watchlist[watchListName][i]);
+                let movieName = watchlist[watchListName][i];
+                const movieInfo = await movieData.find({title: movieName}).project(movieListProjection).toArray();
+                movieList.push(movieInfo[0]);
+            }
+            completeWatchList[watchListName] = movieList;
+        }
+        // console.log(`printing complete watchlist: `);
+        // console.log(completeWatchList);
+        //////////////  Here we'll get top rated rated movies for preferred user genres  ////////////////
+        const countOfUserGenre = preferedGenres.length;
+        const moviesPerGenre = Math.ceil(10/countOfUserGenre);
+        let topPicksForUser = [];
+        for(let i = 0; i < countOfUserGenre; i++){// this will give us top rated movies from users favorite genres
+            let currentUserGenre = preferedGenres[i];
+            const movieList = await movieData.aggregate([{$match: {genre: currentUserGenre, contentRating: {$in: allowedContentRatings}}},{$sort: {overall_rating: -1}},{$limit: moviesPerGenre}]).project(movieListProjection).toArray();
+            for (let i =0; i < movieList.length; i++){
+                topPicksForUser.push(movieList[i]);
+            }
+        }
         let retrunArray = [];
-        const firstSection = await this.getMoviesByGenreWithoutLogin();
-        // console.log(`firstSection`);
-        // console.log(firstSection);
-
-        // retrunArray.push(firstSection);
-        // retrunArray.push(movieListByGenre);
-        // retrunArray.push(watchlist);
-        console.log(`firstSection `)
-        console.log(firstSection);
-        console.log(`_____________________________________________________________`);
-        console.log(`movie List By Genre`);
-        console.log(movieListByGenre);
-        console.log(`_____________________________________________________________`);
-        console.log(`movies from watchlist`);
-        console.log(watchlist);
-        console.log(`_____________________________________________________________`);
-        // console.log(retrunArray);
-        // console.log(`______________________________________________________________`);
-        // console.log(`user watchlists: `);
+        // console.log(`Top picks for user: printing toppicksforuser array:  `)
+        // console.log(topPicksForUser);
+        // console.log(`watchlist: `)
         // console.log(watchlist);
+
+        
+        /////////////// Below is for First Section i.e: getting movies by genre  //////////////////
+
+        const genreList = await movieData.distinct('genre');
+        // console.log(`All genres in the collection:`);
+        // console.log(genreList);
+    
+        function chooseRandom(Array){
+            // console.log(`overall Array length = :${Array.length}`);  
+            const randomChoice = Math.floor(Math.random()*10) % Array.length;
+            // console.log(`selected Array index: ${randomChoice}`);
+            let returnValue = Array[randomChoice];
+            return returnValue;
+        }
+        
+        let uniqueGenres = new Set();
+
+        while (uniqueGenres.size != 3){
+            let newGenre = chooseRandom(genreList);
+            // console.log(`newGenre=: ${newGenre}`);
+            uniqueGenres.add(newGenre);
+        }
+        uniqueGenres = Array.from(uniqueGenres);    
+        let MoviesWithGenre = [];
+
+        for (let i = 0; i < uniqueGenres.length; i++){// here we find movies for the genres present in uniqueGenres
+            const movieList = await movieData.find({genre: uniqueGenres[i],contentRating: {$in: allowedContentRatings}}).project(movieListProjection).limit(10).toArray();
+            if (movieList.length > 0){
+                MoviesWithGenre[uniqueGenres[i]] = movieList;
+            }
+        }
+        // console.log(`printing movies with Genre`)
+        // console.log(MoviesWithGenre);
+        ////////////// Below is for Top 10 on CineRatings  //////////////////////////////////////////
+
+        const topMoviesList = await movieData.aggregate([{$match: {contentRating: {$in: allowedContentRatings}}},{$sort: {overall_rating: -1}},{$limit: 10}]).project(movieListProjection).toArray();
+        // console.log(`top 10 on cineratings: `)
+        // console.log(topMoviesList);
+        retrunArray.push(MoviesWithGenre);
+        retrunArray.push(topPicksForUser);
+        retrunArray.push(completeWatchList);
+        retrunArray.push(topMoviesList);
+        console.log(retrunArray);
         return retrunArray;
     }
 }
