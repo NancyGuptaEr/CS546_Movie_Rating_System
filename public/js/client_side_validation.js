@@ -321,8 +321,8 @@
                 errors.push(`Role can either have admin or user as its value.`);
             }
             preferContentInput.value = preferContentInput.value.toLowerCase();
-            if (preferContentInput.value !== 'g(general audience)' && preferContentInput.value !== 'pg' && preferContentInput.value !== 'pg-13' && preferContentInput.value !== 'pg' && preferContentInput.value !== 'r' && preferContentInput.value !== '18+(nc 17)') {
-                throw `Prefer Content can either have 'G', 'PG', 'PG-13', 'R', 'NC-17' as the value.`;
+            if (preferContentInput.value !== 'g' && preferContentInput.value !== 'pg' && preferContentInput.value !== 'pg-13' && preferContentInput.value !== 'r' && preferContentInput.value !== '18+') {
+                throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
             }
             if (errors.length > 0) {
                 event.preventDefault();
