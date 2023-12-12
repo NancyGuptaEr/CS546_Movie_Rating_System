@@ -1,8 +1,9 @@
-import { checkString, checkDate, checkName } from "../helper.js";
+import { checkStr, checkDate, checkName } from "../helper.js";
 import { movies } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
+
 export const getMovie = async (movieId) => {
-  const id = checkString(movieId, "movieId");
+  const id = checkStr(movieId, "movieId");
   if (!ObjectId.isValid(id)) throw "the movieId is not valid!";
   const moviesCollection = await movies();
   const movieInfo = await moviesCollection.findOne({
@@ -29,6 +30,8 @@ export const getAll = async () => {
         director: movie.artists.director,
         actors: movie.artists.actors,
         genre: movie.genre,
+        overall_rating: movie.overall_rating,
+        contentRating: movie.contentRating,
       };
     })
     .filter((e) => e);
@@ -43,10 +46,10 @@ export const addNewMovie = async (
   actors,
   writer,
   producer,
-  ageRestriction,
+  contentRating,
   thumbnail
 ) => {
-  title = checkString(title, "title");
+  title = checkStr(title, "title");
   if (!Array.isArray(genre)) throw "the type of genre must be array";
   releaseDate = checkDate(releaseDate, "releaseDate");
   director = checkName(director, "director");
@@ -57,10 +60,9 @@ export const addNewMovie = async (
   });
   if (writer !== "") writer = checkName(writer, "writer");
   producer = checkName(producer, "producer");
-  if (ageRestriction === "false" || ageRestriction === "true")
-    ageRestriction = !!ageRestriction;
-  if (typeof ageRestriction !== "boolean")
-    throw "the type of ageRestriction must be boolean";
+  const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
+  if (!allContentRatings.includes(contentRating))
+    throw "contentRating is not valid";
   if (
     !thumbnail.match(
       /^\/uploads\/[0-9]{13}-[a-zA-Z_0-9]{0,20}\.(jpg|bmp|png)$/g
@@ -78,9 +80,10 @@ export const addNewMovie = async (
     genre,
     releaseDate,
     artists,
-    ageRestriction,
+    contentRating,
     reviews: [],
     thumbnail,
+    overall_rating: "0",
   };
   const moviesCollection = await movies();
   const insertInfo = await moviesCollection.insertOne(newMovie);
@@ -89,8 +92,23 @@ export const addNewMovie = async (
   return movie;
 };
 
+
+  // const MovieInfo = await addNewMovie('Top Gun', ['Action'], '12/23/1986','Tom Cruise', ['Tom Cruise'], 'Tom Cruise','Taam Cruuj','G', '/uploads/1234567890123-filename.jpg');
+  // const movieInfo1 = await addNewMovie('The Shawshank Redemption', ['Drama'], '09/23/1994', 'Frank Darabont', ['Tim Robbins', 'Morgan Freeman'], 'Stephen King', 'Niki Marvin', 'R', '/uploads/1234567890123-shawshank.jpg');
+  // const movieInfo2 = await addNewMovie('Inception', ['SciFi'], '07/16/2010', 'Christopher Nolan', ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'], 'Christopher Nolan', 'Emma Thomas', 'PG-13', '/uploads/1234567890124-inception.jpg');
+  // const movieInfo3 = await addNewMovie('Forrest Gump', ['Drama'], '07/06/1994', 'Robert Zemeckis', ['Tom Hanks', 'Robin Wright'], 'Winston Groom', 'Wendy Finerman', 'PG-13', '/uploads/1234567890125-forrestgump.jpg');
+  // const movieInfo4 = await addNewMovie('Pulp Fiction', ['Crime'], '10/14/1994', 'Quentin Tarantino', ['John Travolta', 'Uma Thurman'], 'Quentin Tarantino', 'Lawrence Bender', 'R', '/uploads/1234567890126-pulpfiction.jpg');
+  // const movieInfo5 = await addNewMovie('The Dark Knight', ['Action'], '07/18/2008', 'Christopher Nolan', ['Christian Bale', 'Heath Ledger'], 'Jonathan Nolan', 'Christopher Nolan', 'PG-13', '/uploads/1234567890127-darkknight.jpg');
+
+  // console.log(MovieInfo);
+  // console.log(movieInfo1);
+  // console.log(movieInfo2);
+  // console.log(movieInfo3);
+  // console.log(movieInfo4);
+  // console.log(movieInfo5);
+
 export const remove = async (movieId) => {
-  const id = checkString(movieId, "movieId");
+  const id = checkStr(movieId, "movieId");
   if (!ObjectId.isValid(id)) throw "the movieId is not valid";
   const moviesCollection = await movies();
   const theMovie = await getMovie(id);
@@ -108,17 +126,18 @@ export const update = async (
   genre,
   releaseDate,
   artists,
-  ageRestriction,
+  contentRating,
   thumbnail
 ) => {
-  const id = checkString(movieId, "movieId");
-  title = checkString(title, "title");
+  const id = checkStr(movieId, "movieId");
+  title = checkStr(title, "title");
   if (!Array.isArray(genre)) throw "the type of array must be array";
   releaseDate = checkDate(releaseDate, "releaseDate");
   if (typeof artists !== "object" || Array.isArray(artists))
     throw "the type of artists must be object";
-  if (typeof ageRestriction !== "boolean")
-    throw "the type of ageRestriction must be boolean";
+  const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
+  if (!allContentRatings.includes(contentRating))
+    throw "contentRating is not valid";
   const moviesCollection = await movies();
   const targetMovie = await moviesCollection.findOne({ _id: new ObjectId(id) });
   if (!targetMovie) throw "the movie does not exist";
@@ -126,7 +145,7 @@ export const update = async (
     {
       _id: new ObjectId(id),
     },
-    { $set: { title, genre, releaseDate, artists, ageRestriction, thumbnail } },
+    { $set: { title, genre, releaseDate, artists, contentRating, thumbnail } },
     { returnDocument: "after" }
   );
   if (!updateInfo) throw "update failed";

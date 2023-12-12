@@ -1,7 +1,22 @@
 import { Router } from "express";
 import { checkNull, checkString, trimString } from "../helper.js";
 import { authDataFuncs } from "../data/index.js";
+
 const router = Router();
+
+router.route("/").get(async (req, res) => {
+  const url = req.originalUrl;
+  const user = req.session.user;
+  if (url === "/") {
+    if (!user) return res.redirect("/login");
+    if (req.session.user.role === "admin") {
+      return res.redirect("/admin");
+    } else if (req.session.user.role === "user") {
+      // return res.redirect("/protected");
+    }
+  }
+  return res.json({ error: "YOU SHOULD NOT BE HERE!" });
+});
 
 router
     .route('/register')
@@ -195,16 +210,18 @@ router
         }
     });
 
-router.route('/error').get(async (req, res) => {
-    //code here for GET
-    return res.status(403).render("error", { authUser: req.session.user, title: 'error' });
+router.route("/error").get(async (req, res) => {
+  //code here for GET
+  return res
+    .status(403)
+    .render("error", { authUser: req.session.user, title: "error" });
 });
 
-router.route('/logout').get(async (req, res) => {
-    //code here for GET
-    req.session.destroy(() => {
-        console.log('session destroyed.');
-    });
-    res.redirect("/");
+router.route("/logout").get(async (req, res) => {
+  //code here for GET
+  req.session.destroy(() => {
+    console.log("session destroyed.");
+  });
+  res.redirect("/");
 });
 export default router;
