@@ -109,8 +109,8 @@ export const registerUser = async (
   }
   preferContent = preferContent.toLowerCase();
   preferContent = trimString(preferContent);
-  if (preferContent !== 'g(general audience)' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'pg' && preferContent !== 'r' && preferContent !== '18+(nc 17)') {
-    throw `Prefer Content can either have 'G', 'PG', 'PG-13', 'R', 'NC-17' as the value.`;
+  if (preferContent !== 'g' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'r' && preferContent !== '18+') {
+    throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
   }
   let isAdmin;
   if (role === 'admin')
