@@ -49,6 +49,8 @@ let exportedMethods = {
         // console.log(returnMoviesArray); // till here we have random genre and movies with
         // console.log(`__________________________________`);
         // console.log(movieList);
+        console.log(returnMoviesArray);
+        console.log(`_______________________________________________________`);
         return returnMoviesArray;
 
     },
@@ -188,7 +190,7 @@ let exportedMethods = {
             uniqueGenres.add(newGenre);
         }
         uniqueGenres = Array.from(uniqueGenres);    
-        let MoviesWithGenre = [];
+        let MoviesWithGenre = {};// this will store movies with 3 random Genres
 
         for (let i = 0; i < uniqueGenres.length; i++){// here we find movies for the genres present in uniqueGenres
             const movieList = await movieData.find({genre: uniqueGenres[i],contentRating: {$in: allowedContentRatings}}).project(movieListProjection).limit(10).toArray();
@@ -207,7 +209,16 @@ let exportedMethods = {
         retrunArray.push(topPicksForUser);
         retrunArray.push(completeWatchList);
         retrunArray.push(topMoviesList);
+
+        // BELOW IS THE STRUCTURE OF RETURN ARRAY, EVERY THING IS ACCEPT HAS CONTENT RATING APPLIED
+
+        //structure of returnArray  [ {movieGenre:[movies]},   //movies with 3 randomGenres
+        //                          [{movie1,movie2,etc}],     //movies recommended based on user genres
+        //                          {watchListName:[movies]},  //movies from watchlist
+        //                          [movies] ]                 //top 10 on cineratings
+
         console.log(retrunArray);
+        console.log(`_______________________________________________________`);
         return retrunArray;
     }
 }
