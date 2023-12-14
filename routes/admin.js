@@ -12,6 +12,7 @@ import {
   removeByFlaggedTimes,
 } from "../data/flaggedReviews.js";
 import { isAdminAuthenticated } from "../middleware.js";
+
 import xss from "xss";
 
 export const adminMoviesRouter = Router();
@@ -59,19 +60,19 @@ adminMoviesRouter
     res.render("uploadMovie", { allGenres });
   })
   .post(isAdminAuthenticated, upload.single("image"), async (req, res) => {
+    const data = req.body;
+    let {
+      title,
+      genre,
+      releaseDate,
+      director,
+      actors,
+      writer,
+      producer,
+      contentRating,
+    } = data;
     try {
-      const data = req.body;
       if (!data) throw "input is required";
-      let {
-        title,
-        genre,
-        releaseDate,
-        director,
-        actors,
-        writer,
-        producer,
-        contentRating,
-      } = data;
       const thumbnail = req.file ? "/uploads/" + req.file.filename : "";
       title = checkStr(title, "title");
       if (!Array.isArray(genre)) throw "the type of genre must be array";
@@ -88,6 +89,7 @@ adminMoviesRouter
       const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
       if (!allContentRatings.includes(contentRating))
         throw "contentRating is not valid";
+      const ifExist = await adminMovies.ifMovieExist(title, releaseDate);
       const newMovie = await adminMovies.addNewMovie(
         title,
         genre,
@@ -100,8 +102,8 @@ adminMoviesRouter
         thumbnail
       );
       return res.redirect("/admin");
-    } catch (e) {
-      return res.status(400).json({ error: e });
+    } catch (error) {
+      return res.render("uploadMovie", { error });
     }
   });
 
@@ -181,6 +183,7 @@ adminMoviesRouter.post(
     let id;
     try {
       id = checkStr(movieId, "movieId");
+      if (!ObjectId.isValid(id)) throw "the movieId is not valid";
     } catch (e) {
       return res.status(400).json({ error: e });
     }
@@ -225,6 +228,11 @@ adminMoviesRouter.post(
       const allContentRatings = ["G", "PG", "PG-13", "R", "NC-17"];
       if (!allContentRatings.includes(contentRating))
         throw "contentRating is not valid";
+      const ifExist = await adminMovies.ifMovieExist2Other(
+        title,
+        releaseDate,
+        id
+      );
       const newMovie = await adminMovies.update(
         id,
         title,
@@ -236,7 +244,7 @@ adminMoviesRouter.post(
       );
       if (newMovie) return res.redirect("/admin");
     } catch (e) {
-      res.status(400).json({ error: e });
+      return res.render("adminError", { error: e, id });
     }
   }
 );
