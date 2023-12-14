@@ -16,19 +16,22 @@ export const getMovie = async (movieId) => {
 
 export const ifMovieExist = async (title, releaseDate) => {
   const moviesCollection = await movies();
-  const ifExist = await moviesCollection.findOne({ title, releaseDate });
-  if (ifExist) throw "the movie already exists";
+  const ifExist = await moviesCollection.find({ title, releaseDate }).toArray();
+  if (ifExist.length !== 0) throw "the movie already exists";
   return ifExist;
 };
 
 export const ifMovieExist2Other = async (title, releaseDate, id) => {
   const moviesCollections = await movies();
-  const ifExist = await moviesCollections.find({
-    _id: { $ne: new ObjectId(id) },
-    title: title,
-    releaseDate: releaseDate,
-  });
-  if (ifExist) throw "the same movie already exists";
+  const ifExist = await moviesCollections
+    .find({
+      _id: { $ne: new ObjectId(id) },
+      title: title,
+      releaseDate: releaseDate,
+    })
+    .toArray();
+  if (ifExist.length !== 0) throw "the same movie already exists";
+  return ifExist;
 };
 
 export const getAll = async () => {
@@ -47,6 +50,7 @@ export const getAll = async () => {
         director: movie.artists.director,
         actors: movie.artists.actors,
         genre: movie.genre,
+        releaseDate: movie.releaseDate,
         overall_rating: movie.overall_rating,
         contentRating: movie.contentRating,
       };
