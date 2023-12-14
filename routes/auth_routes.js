@@ -32,34 +32,18 @@ router
             if (postData.roleInput === 'user') {
                 let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
                 postData.preferGenreInput = xss(postData.preferGenreInput);
+                postData.preferGenreInput = postData.preferGenreInput.split(',');
                 checkNull(postData.preferGenreInput, 'Prefer Genre')
-                if (typeof postData.preferGenreInput !== 'string' && !Array.isArray(postData.preferGenreInput)) {
-                    throw `Prefer Genre can be a string value or an array.`;
+                if (!Array.isArray(postData.preferGenreInput)) {
+                    throw `Invalid value for prefer genre.`;
                 }
-                if (typeof postData.preferGenreInput === 'string') {
-                    checkNull(postData.preferGenreInput, 'Prefer Genre');
-                    checkString(postData.preferGenreInput);
-                    postData.preferGenreInput = trimString(postData.preferGenreInput);
-                    postData.preferGenreInput = postData.preferGenreInput.toLowerCase();
-                    if (!preferGenres.includes(postData.preferGenreInput)) {
+                for (let x of postData.preferGenreInput) {
+                    checkNull(x, 'genre values');
+                    checkString(x, 'genre values');
+                    x = trimString(x);
+                    x = x.toLowerCase();
+                    if (!preferGenres.includes(x)) {
                         throw `Prefer Genre can have action, adventure, comedy, drama, fantasy, horror, musicals, mystery, romance, science fiction, sports, thriller, and western as the value`;
-                    }
-                    let temp = postData.preferGenreInput;
-                    postData.preferGenreInput = [];
-                    postData.preferGenreInput.push(temp);
-                }
-                else {
-                    if (!Array.isArray(postData.preferGenreInput)) {
-                        throw `Prefer genre must be an array.`;
-                    }
-                    for (let x of postData.preferGenreInput) {
-                        checkNull(x, 'genre values');
-                        checkString(x, 'genre values');
-                        x = trimString(x);
-                        x = x.toLowerCase();
-                        if (!preferGenres.includes(x)) {
-                            throw `Prefer Genre can have action, adventure, comedy, drama, fantasy, horror, musicals, mystery, romance, science fiction, sports, thriller, and western as the value`;
-                        }
                     }
                 }
             }
