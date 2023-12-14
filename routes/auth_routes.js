@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { checkNull, checkString, trimString } from "../helper.js";
 import { authDataFuncs } from "../data/index.js";
+import xss from 'xss';
 const router = Router();
 
 router
@@ -16,6 +17,12 @@ router
         postData = JSON.stringify(postData);
         postData = JSON.parse(postData);
         try {
+            postData.emailAddressInput = xss(postData.emailAddressInput);
+            postData.passwordInput = xss(postData.passwordInput);
+            postData.confirmPasswordInput = xss(postData.confirmPasswordInput);
+            postData.ageInput = xss(postData.ageInput);
+            postData.roleInput = xss(postData.roleInput);
+            postData.preferContentInput = xss(postData.preferContentInput);
             checkNull(postData.emailAddressInput, 'emailAddress');
             checkNull(postData.passwordInput, 'password');
             checkNull(postData.confirmPasswordInput, 'Confirm password');
@@ -24,6 +31,7 @@ router
             checkNull(postData.preferContentInput, 'Prefer Content');
             if (postData.roleInput === 'user') {
                 let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
+                postData.preferGenreInput = xss(postData.preferGenreInput);
                 checkNull(postData.preferGenreInput, 'Prefer Genre')
                 if (typeof postData.preferGenreInput !== 'string' && !Array.isArray(postData.preferGenreInput)) {
                     throw `Prefer Genre can be a string value or an array.`;
@@ -147,8 +155,10 @@ router
     })
     .post(async (req, res) => {
         //code here for POST
-        const postData = req.body;
+        let postData = req.body;
         try {
+            postData.emailAddressInput = xss(postData.emailAddressInput);
+            postData.passwordInput = xss(postData.passwordInput);
             checkNull(postData.emailAddressInput, 'emailAddress');
             checkNull(postData.passwordInput, 'password');
             checkString(postData.emailAddressInput, 'emailAddress');
