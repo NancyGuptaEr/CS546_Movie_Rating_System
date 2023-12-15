@@ -8,6 +8,11 @@ editButton.forEach(button   =>  {
     button.addEventListener('click', () =>  {
         // alert('clicked!');
         modal.style.display = 'block';
+        const existingRating = button.dataset.rating;
+        const existingReview= button.dataset.review;
+
+        document.getElementById('editedReview').value = existingReview;
+        document.getElementById('editedRating').value = existingRating;
     });
 });
 

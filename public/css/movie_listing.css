@@ -79,3 +79,18 @@
     max-width: none; 
     margin: 0 auto;
 }
+
+
+
+  .auth-buttons {
+    position: relative;
+    top: 0;
+    right: 0;
+    padding: 10px; /* Adjust as needed */
+  }
+  
+  /* Style for the watchlist button */
+  .watchlist {
+    display: block;
+    margin-top: 10px; /* Adjust as needed */
+  }

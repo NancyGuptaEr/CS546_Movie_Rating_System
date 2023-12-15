@@ -14,6 +14,26 @@ export const getMovie = async (movieId) => {
   return movieInfo;
 };
 
+export const ifMovieExist = async (title, releaseDate) => {
+  const moviesCollection = await movies();
+  const ifExist = await moviesCollection.find({ title, releaseDate }).toArray();
+  if (ifExist.length !== 0) throw "the movie already exists";
+  return ifExist;
+};
+
+export const ifMovieExist2Other = async (title, releaseDate, id) => {
+  const moviesCollections = await movies();
+  const ifExist = await moviesCollections
+    .find({
+      _id: { $ne: new ObjectId(id) },
+      title: title,
+      releaseDate: releaseDate,
+    })
+    .toArray();
+  if (ifExist.length !== 0) throw "the same movie already exists";
+  return ifExist;
+};
+
 export const getAll = async () => {
   const moviesCollection = await movies();
   const allObjIdMovies = await moviesCollection.find().toArray();
@@ -30,6 +50,7 @@ export const getAll = async () => {
         director: movie.artists.director,
         actors: movie.artists.actors,
         genre: movie.genre,
+        releaseDate: movie.releaseDate,
         overall_rating: movie.overall_rating,
         contentRating: movie.contentRating,
       };
@@ -92,20 +113,19 @@ export const addNewMovie = async (
   return movie;
 };
 
+// const MovieInfo = await addNewMovie('Top Gun', ['Action'], '12/23/1986','Tom Cruise', ['Tom Cruise'], 'Tom Cruise','Taam Cruuj','G', '/uploads/1234567890123-filename.jpg');
+// const movieInfo1 = await addNewMovie('The Shawshank Redemption', ['Drama'], '09/23/1994', 'Frank Darabont', ['Tim Robbins', 'Morgan Freeman'], 'Stephen King', 'Niki Marvin', 'R', '/uploads/1234567890123-shawshank.jpg');
+// const movieInfo2 = await addNewMovie('Inception', ['SciFi'], '07/16/2010', 'Christopher Nolan', ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'], 'Christopher Nolan', 'Emma Thomas', 'PG-13', '/uploads/1234567890124-inception.jpg');
+// const movieInfo3 = await addNewMovie('Forrest Gump', ['Drama'], '07/06/1994', 'Robert Zemeckis', ['Tom Hanks', 'Robin Wright'], 'Winston Groom', 'Wendy Finerman', 'PG-13', '/uploads/1234567890125-forrestgump.jpg');
+// const movieInfo4 = await addNewMovie('Pulp Fiction', ['Crime'], '10/14/1994', 'Quentin Tarantino', ['John Travolta', 'Uma Thurman'], 'Quentin Tarantino', 'Lawrence Bender', 'R', '/uploads/1234567890126-pulpfiction.jpg');
+// const movieInfo5 = await addNewMovie('The Dark Knight', ['Action'], '07/18/2008', 'Christopher Nolan', ['Christian Bale', 'Heath Ledger'], 'Jonathan Nolan', 'Christopher Nolan', 'PG-13', '/uploads/1234567890127-darkknight.jpg');
 
-  // const MovieInfo = await addNewMovie('Top Gun', ['Action'], '12/23/1986','Tom Cruise', ['Tom Cruise'], 'Tom Cruise','Taam Cruuj','G', '/uploads/1234567890123-filename.jpg');
-  // const movieInfo1 = await addNewMovie('The Shawshank Redemption', ['Drama'], '09/23/1994', 'Frank Darabont', ['Tim Robbins', 'Morgan Freeman'], 'Stephen King', 'Niki Marvin', 'R', '/uploads/1234567890123-shawshank.jpg');
-  // const movieInfo2 = await addNewMovie('Inception', ['SciFi'], '07/16/2010', 'Christopher Nolan', ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'], 'Christopher Nolan', 'Emma Thomas', 'PG-13', '/uploads/1234567890124-inception.jpg');
-  // const movieInfo3 = await addNewMovie('Forrest Gump', ['Drama'], '07/06/1994', 'Robert Zemeckis', ['Tom Hanks', 'Robin Wright'], 'Winston Groom', 'Wendy Finerman', 'PG-13', '/uploads/1234567890125-forrestgump.jpg');
-  // const movieInfo4 = await addNewMovie('Pulp Fiction', ['Crime'], '10/14/1994', 'Quentin Tarantino', ['John Travolta', 'Uma Thurman'], 'Quentin Tarantino', 'Lawrence Bender', 'R', '/uploads/1234567890126-pulpfiction.jpg');
-  // const movieInfo5 = await addNewMovie('The Dark Knight', ['Action'], '07/18/2008', 'Christopher Nolan', ['Christian Bale', 'Heath Ledger'], 'Jonathan Nolan', 'Christopher Nolan', 'PG-13', '/uploads/1234567890127-darkknight.jpg');
-
-  // console.log(MovieInfo);
-  // console.log(movieInfo1);
-  // console.log(movieInfo2);
-  // console.log(movieInfo3);
-  // console.log(movieInfo4);
-  // console.log(movieInfo5);
+// console.log(MovieInfo);
+// console.log(movieInfo1);
+// console.log(movieInfo2);
+// console.log(movieInfo3);
+// console.log(movieInfo4);
+// console.log(movieInfo5);
 
 export const remove = async (movieId) => {
   const id = checkStr(movieId, "movieId");
