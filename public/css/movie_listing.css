@@ -28,7 +28,7 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 15px; /* This adds space between items */
+    gap: 15px;
 }
 
 /* Movie card styles */
@@ -43,7 +43,7 @@
 }
 
 .movie:last-child {
-    margin-right: 0; /* Removes margin from the last movie card */
+    margin-right: 0; 
 }
 
 .movie img {
@@ -66,16 +66,16 @@
     }
 }
 
-/* If you want text to wrap */
+
 .movie p {
     white-space: normal;
     overflow-wrap: break-word;
 }
 .movie-list::-webkit-scrollbar {
-    height: 6px; /* or any smaller size */
+    height: 6px;
 }
 .container {
     width: 90%;
-    max-width: none; /* This will override Bootstrap's max-width for the container */
-    margin: 0 auto; /* Keeps the container centered */
+    max-width: none; 
+    margin: 0 auto;
 }
