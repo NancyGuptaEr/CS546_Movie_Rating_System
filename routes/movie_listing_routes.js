@@ -19,9 +19,13 @@ router
             const topPicksForUser = movieInfo[1];
             const userWatchListMovies = movieInfo[2];
             const top10onCineRating = movieInfo[3];
-            console.log(`printing top10oncinerating: `)
-            console.log(top10onCineRating);
-            res.render('movieListing',{Genres: moviesByGenre, recommendedMovies: topPicksForUser, UserWatchListMovies: userWatchListMovies, Top10: top10onCineRating});
+            console.log(`printing watchlist `)
+            let watchListNames = [];
+            for (let watchlistName in userWatchListMovies){
+                watchListNames.push(watchlistName);
+            }
+            console.log(watchListNames);
+            res.render('movieListing',{Genres: moviesByGenre, recommendedMovies: topPicksForUser, UserWatchListMovies: userWatchListMovies, Top10: top10onCineRating, isLoggedIn: true, watchListNames: watchListNames, userId: userId});
         }
         else {
             const movieInfo = await movieListingDataFuncs.getMoviesByGenreWithoutLogin();
@@ -33,6 +37,17 @@ router
             console.log(`______________________________________________`);
             res.render('movieListing',{title: 'CineRatings', Genres: moviesByGenre, Top10: top10onCineRating});
         }
+    })
+    .post(async (req,res)=>{
+
     });
+    router.route('/add-to-watchlist')
+        .get(async (req, res) => {
+            console.log(`entered get of add to watchlist route`);
+        })
+        .post(async (req, res) => {
+            console.log(`\n we are in post of add to watchlist route`);
+            console.log(req.body);
+        })
 
 export default router;

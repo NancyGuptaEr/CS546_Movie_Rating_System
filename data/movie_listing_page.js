@@ -31,8 +31,15 @@ let exportedMethods = {
             for (let i=0; i < userInfo[watchList].length; i++){
                 let movieId = userInfo[watchList][i];
                 let movieInfo = await movieData.find({_id: new ObjectId(movieId)}).project(movieListProjection).toArray()
-                movieInfo = movieInfo[0];
-                returnWatchListObject[watchList].push(movieInfo);
+                // console.log(`##########################################3`);
+                // console.log(movieInfo);
+                // console.log(`########################################`);
+                
+           
+                if (movieInfo.length > 0){
+                    movieInfo = movieInfo[0];
+                    returnWatchListObject[watchList].push(movieInfo);
+                }
             }
         }
         console.log(`printing returnmovieovject:`);
@@ -75,7 +82,9 @@ let exportedMethods = {
 
         for (let i = 0; i < uniqueGenres.length; i++){// here we find movies for the genres present in uniqueGenres
             const movieList = await movieData.find({genre: uniqueGenres[i]}).project(movieListProjection).limit(10).toArray();
-            MoviesWithGenre[uniqueGenres[i]] = movieList;
+            if(movieList.length > 0){
+                MoviesWithGenre[uniqueGenres[i]] = movieList;
+            }
         }
         returnMoviesArray.push(MoviesWithGenre);//Now we push the uniqueGenre movies to the array forming second section of the page
 
@@ -146,7 +155,7 @@ let exportedMethods = {
         for (let i = 0; i < preferedGenres.length; i++){//here we go through users prefered genre and push only movies which fall under users max content rating
             const movieList = await movieData.find({genre: preferedGenres[i], contentRating: {$in: allowedContentRatings}}).project(movieListProjection).limit(10).toArray();
             const genre = preferedGenres[i]
-            if(movieList.length != 0){
+            if(movieList.length > 0){
                 movieListByGenre[genre] = movieList;
             }
             // console.log(`printing movieList :`);
@@ -188,8 +197,10 @@ let exportedMethods = {
         for(let i = 0; i < countOfUserGenre; i++){// this will give us top rated movies from users favorite genres
             let currentUserGenre = preferedGenres[i];
             const movieList = await movieData.aggregate([{$match: {genre: currentUserGenre, contentRating: {$in: allowedContentRatings}}},{$sort: {overall_rating: -1}},{$limit: moviesPerGenre}]).project(movieListProjection).toArray();
-            for (let i =0; i < movieList.length; i++){
-                topPicksForUser.push(movieList[i]);
+            if(movieList.length > 0){
+                for (let i =0; i < movieList.length; i++){
+                    topPicksForUser.push(movieList[i]);
+                }
             }
         }
         let retrunArray = [];
@@ -282,12 +293,16 @@ let exportedMethods = {
         }
         
         const userData = await users();
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+        if(!userExists){
+            throw `There is no such user.`
+        }
         const userInfo = await userData.findOneAndUpdate({_id: new ObjectId(userId)},
         {$set: {[`watchList.${watchListName}`]:[]}},
         {returnDocument: 'after'});
         console.log(userInfo);
         if(!userInfo) {
-            throw `There was a problem adding new watch list`
+            throw `There was a problem adding watchlist`;
         }
         return true;
     },
@@ -315,16 +330,31 @@ let exportedMethods = {
            if(!movieInfo){
                 throw `Movie doesn't exists`;
            }
-           
-           const watchListInserted = await userData.findOneAndUpdate(
+           const watchListExists =  await this.checkWatchListExists(watchListName, userId);
+           if(!watchListExists){
+                throw `WatchList doesn't exists`;
+           }
+           const movieExistsinWatchList = await userData.findOne({_id: new ObjectId(userId)},{watchList: watchListName});
+        //    console.log(movieExistsinWatchList.watchList[watchListName]);
+           let moviesInWatchList = movieExistsinWatchList.watchList[watchListName];
+           for (let i=0; i < moviesInWatchList.length; i++ ){
+                if(movieId.toString()===moviesInWatchList[i].toString()){
+                    throw `Movie is already present in the watchlist`;
+                }
+           }
+        //    console.log(`Movies in `);
+        //    console.log(movieExistsinWatchList);
+        //    console.log(`__________________________`);
+           const movieInsertedInWatchList = await userData.findOneAndUpdate(
                                     {_id: new ObjectId(userId)},
                                     {$push: {[`watchList.${watchListName}`]: new ObjectId(movieId)}},
                                     {returnDocument: 'after'});
             
-            if(!watchListInserted){
+            if(!movieInsertedInWatchList){
                 throw `there was a problem inserting the movie to the watchlist`
             }
-            console.log(watchListInserted);
+            console.log(movieInsertedInWatchList);
+            return true;
     }
 }
 

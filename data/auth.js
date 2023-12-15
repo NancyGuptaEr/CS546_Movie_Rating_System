@@ -117,6 +117,7 @@ export const registerUser = async (
     isAdmin = true;
   else
     isAdmin = false;
+  preferContent = preferContent.toUpperCase();
   const passwordHashed = await bcrypt.hash(password, saltRounds);
   const newUser = {
     emailAddress,
@@ -178,5 +179,5 @@ export const loginUser = async (emailAddress, password) => {
   if (!isSame) {
     throw `Either the email address or password is invalid.`;
   }
-  return {_id: exist._id, profileImage: exist.profileImage, isAdmin: exist.isAdmin };
+  return {_id: exist._id, profileImage: exist.profileImage, isAdmin: exist.isAdmin, watchList: exist.watchList };
 };

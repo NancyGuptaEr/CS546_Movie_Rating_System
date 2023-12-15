@@ -12,16 +12,33 @@
             {{#each this}}
             <div class="movie">
                 <a href="/movie/{{_id}}">
-                <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
-                <p>Title: {{title}}</p>
-                <p>Rating: {{overall_rating}}</p>
-                <p>MPA: {{contentRating}}</p>
+                    <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
+                    <p>Title: {{title}}</p>
+                    <p>Rating: {{overall_rating}}</p>
+                    <p>MPA: {{contentRating}}</p>
+                    <p>userId: {{../../userId}}</p>
+                    <p>movieId: {{_id}}</p>
                 </a>
+                {{#if ../../isLoggedIn}}
+                <div class="add-to-watchlist">
+                    <span>Add to Watchlist</span>
+                    <select class="watchlist-select" data-movie-id="{{_id}}" data-user-id="{{../../userId}}" onchange="addToWatchlist(this)">
+                    <p>userId: {{../../userId}}</p>
+                    <p>movieId: {{_id}}</p>
+                        <!-- Populate options here, possibly dynamically -->
+                        {{#each ../../watchListNames}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                {{/if}}
+                
             </div>
             {{/each}}
         </div>
     </div>
-    {{/each}}
+{{/each}}
+
 
     <!-- Recommended Movies Section -->
     {{#if recommendedMovies}}
@@ -36,6 +53,7 @@
                 <p>Rating: {{overall_rating}}</p>
                 <p>MPA: {{contentRating}}</p>
                 </a>
+                
             </div>
             {{/each}}
         </div>
@@ -86,4 +104,6 @@
     {{/each}}
 </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../public/js/movie_listing.js"></script>
 </html>
