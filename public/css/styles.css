@@ -39,3 +39,112 @@
 .error-container h1 {
     color: red;
 }
+
+
+
+.navbar {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.navbar .container-fluid {
+  display: flex;
+  align-items: center;
+  flex-grow: 1; 
+}
+
+img.logo {
+  height: 60px;
+  width: 60px;
+  margin-right: 20px; 
+}
+img.icon  {
+  height: 50px; 
+  width: 30px;
+  margin-right: 20px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-right: 20px; 
+}
+
+.search-bar form {
+  display: flex;
+}
+
+.search-bar input[type="text"] {
+  padding: 5px;
+  width: 1150px;
+  margin-right: 5px;
+}
+
+.nav-item {
+  margin-left: 10px;
+}
+
+.editModal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fefefe;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000; 
+}
+.editModalContent {
+  width: 300px; /* Adjust the width as needed */
+}
+
+.editModalContent h2 {
+  margin-top: 0;
+}
+
+.editModalContent .edit-form-group {
+  margin-bottom: 15px;
+}
+
+.editModalContent label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.editModalContent input[type="number"],
+.editModalContent textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.editModalContent button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.editModalContent button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #aaa;
+}

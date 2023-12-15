@@ -71,6 +71,16 @@ adminMoviesRouter
       producer,
       contentRating,
     } = data;
+    title = xss(title);
+    releaseDate = xss(releaseDate);
+    director = xss(director);
+    actors = xss(actors);
+    writer = xss(writer);
+    producer = xss(producer);
+    contentRating = xss(contentRating);
+    if (Array.isArray(genre)) {
+      genre = genre.map((item) => xss(item));
+    }
     try {
       if (!data) throw "input is required";
       const thumbnail = req.file ? "/uploads/" + req.file.filename : "";
@@ -110,7 +120,7 @@ adminMoviesRouter
 adminMoviesRouter
   .route("/:movieId")
   .delete(isAdminAuthenticated, async (req, res) => {
-    let id = req.params.movieId;
+    let id = xss(req.params.movieId);
     try {
       id = checkStr(id, "movieId");
       if (!ObjectId.isValid(id)) throw "the movieId is not valid";
@@ -133,7 +143,7 @@ adminMoviesRouter
 adminMoviesRouter
   .route("/update/:movieId")
   .get(isAdminAuthenticated, async (req, res) => {
-    let movieId = req.params.movieId;
+    let movieId = xss(req.params.movieId);
     try {
       movieId = checkStr(movieId, "movieId");
       if (!ObjectId.isValid(movieId)) throw "the movieId is not valid";
@@ -178,9 +188,29 @@ adminMoviesRouter.post(
   upload.single("image"),
   isAdminAuthenticated,
   async (req, res) => {
-    const movieId = req.params.movieId;
+    const movieId = xss(req.params.movieId);
     const data = req.body;
     let id;
+    let {
+      title,
+      genre,
+      releaseDate,
+      director,
+      actors,
+      writer,
+      producer,
+      contentRating,
+    } = data;
+    title = xss(title);
+    releaseDate = xss(releaseDate);
+    director = xss(director);
+    actors = xss(actors);
+    writer = xss(writer);
+    producer = xss(producer);
+    contentRating = xss(contentRating);
+    if (Array.isArray(genre)) {
+      genre = genre.map((item) => xss(item));
+    }
     try {
       id = checkStr(movieId, "movieId");
       if (!ObjectId.isValid(id)) throw "the movieId is not valid";
@@ -252,9 +282,13 @@ adminMoviesRouter.post(
 adminMoviesRouter
   .route("/addReview/:movieId")
   .post(isAdminAuthenticated, async (req, res) => {
-    const movieId = req.params.movieId;
+    const movieId = xss(req.params.movieId);
     const data = req.body;
     const { userId, text, rating, ts, flaggedTimes } = data;
+    userId = xss(userId);
+    text = xss(text);
+    ts = xss(ts);
+    flaggedTimes = xss(flaggedTimes);
     try {
       const review = await createReviews(
         movieId,
@@ -284,7 +318,7 @@ adminMoviesRouter
 adminMoviesRouter
   .route("/flaggedReviews/:reviewId")
   .delete(isAdminAuthenticated, async (req, res) => {
-    let reviewId = req.params.reviewId;
+    let reviewId = xss(req.params.reviewId);
     try {
       reviewId = checkStr(reviewId, "reviewId");
       if (!ObjectId.isValid(reviewId)) throw "the reviewId is not valid";
