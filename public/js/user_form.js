@@ -1,14 +1,13 @@
 // In this file, you must perform all client-side validation for every single form input (and the role dropdown) on your pages. The constraints for those fields are the same as they are for the data functions and routes. Using client-side JS, you will intercept the form's submit event when the form is submitted and If there is an error in the user's input or they are missing fields, you will not allow the form to submit to the server and will display an error on the page to the user informing them of what was incorrect or missing.  You must do this for ALL fields for the register form as well as the login form. If the form being submitted has all valid data, then you will allow it to submit to the server for processing. Don't forget to check that password and confirm password match on the registration form!
 (function () {
     let emailAddressInput = document.getElementById('emailAddressInput');
-    let passwordInput = document.getElementById('passwordInput');
-    let confirmPasswordInput = document.getElementById('confirmPasswordInput');
     let roleInput = document.getElementById('roleInput');
     let ageInput = document.getElementById('ageInput');
     let preferGenreInput = document.getElementById('preferGenreInput');
+    let preferContentInput = document.getElementById('preferContentInput');
     let userForm = document.getElementById('userinfo-form')
     let errorDiv = document.getElementById('client-side-error-div');
-    if(userForm){
+    if (userForm) {
         emailAddressInput.addEventListener('focusin', () => {
             let emailInfo = document.getElementById('email-info');
             emailInfo.toggleAttribute('hidden');
@@ -16,22 +15,6 @@
         emailAddressInput.addEventListener('focusout', () => {
             let emailInfo = document.getElementById('email-info');
             emailInfo.toggleAttribute('hidden');
-        })
-        passwordInput.addEventListener('focusin', () => {
-            let passwordInfo = document.getElementById('password-info');
-            passwordInfo.toggleAttribute('hidden');
-        })
-        passwordInput.addEventListener('focusout', () => {
-            let passwordInfo = document.getElementById('password-info');
-            passwordInfo.toggleAttribute('hidden');
-        })
-        confirmPasswordInput.addEventListener('focusin', () => {
-            let confirmpasswordInfo = document.getElementById('confirmpassword-info');
-            confirmpasswordInfo.toggleAttribute('hidden');
-        })
-        confirmPasswordInput.addEventListener('focusout', () => {
-            let confirmpasswordInfo = document.getElementById('confirmpassword-info');
-            confirmpasswordInfo.toggleAttribute('hidden');
         })
         preferGenreInput.addEventListener('focusin', () => {
             let genreInfo = document.getElementById('genre-info');
@@ -57,12 +40,6 @@
             }
             if (!emailAddressInput.value || emailAddressInput.value.trim().length === 0) {
                 errors.push("Email address field must have a valid string and cannot contain only spaces.");
-            }
-            if (!passwordInput.value || passwordInput.value.trim().length === 0) {
-                errors.push("Password field must have a valid string and cannot contain only spaces.");
-            }
-            if (!confirmPasswordInput.value || confirmPasswordInput.value.trim().length === 0) {
-                errors.push("Confirm password field must have a valid string and cannot contain only spaces.");
             }
             if (!roleInput.value || roleInput.value.trim().length === 0) {
                 errors.push("You must select a value for role.");
@@ -92,46 +69,9 @@
             if (ageInput.value < 18 || ageInput.value > 100) {
                 errors.push(`Age must be between 18 and 100.`);
             }
-            if (passwordInput.value.length < 8) {
-                errors.push(`Password must be at least 8 characters long.`);
-            }
-            if (passwordInput.value.match(/[A-Z]/g) === null) {
-                errors.push(`Password must contain at least one uppercase character.`);
-            }
-            if (passwordInput.value.match(/[0-9]/g) === null) {
-                errors.push(`Password must contain at least one number.`);
-            }
-            if (passwordInput.value.match(/[^A-Za-z0-9]/g) === null) {
-                errors.push(`Password must contain at least one special character.`);
-            }
-            if (passwordInput.value.match(/\s/g) !== null) {
-                errors.push(`Password cannot contain space.`);
-            }
-            if (confirmPasswordInput.value.length < 8) {
-                errors.push(`Confirm password must be at least 8 characters long.`);
-            }
-            if (confirmPasswordInput.value.match(/[A-Z]/g) === null) {
-                errors.push(`Confirm password must contain at least one uppercase character.`);
-            }
-            if (confirmPasswordInput.value.match(/[0-9]/g) === null) {
-                errors.push(`Confirm password must contain at least one number.`);
-            }
-            if (confirmPasswordInput.value.match(/[^A-Za-z0-9]/g) === null) {
-                errors.push(`Confirm password must contain at least one special character.`);
-            }
-            if (confirmPasswordInput.value.match(/\s/g) !== null) {
-                errors.push(`Confirm password cannot contain space.`);
-            }
-            if (passwordInput.value.trim() !== confirmPasswordInput.value.trim()) {
-                errors.push(`Values in password and confirm password field do not match.`);
-            }
             roleInput.value = roleInput.value.toLowerCase();
             if (roleInput.value !== 'admin' && roleInput.value !== 'user') {
                 errors.push(`Role can either have admin or user as its value.`);
-            }
-            preferContentInput.value = preferContentInput.value.toLowerCase();
-            if (preferContentInput.value !== 'g' && preferContentInput.value !== 'pg' && preferContentInput.value !== 'pg-13' && preferContentInput.value !== 'r' && preferContentInput.value !== '18+') {
-                throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
             }
             if (errors.length > 0) {
                 event.preventDefault();

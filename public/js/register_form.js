@@ -7,6 +7,8 @@
     let ageInput = document.getElementById('ageInput');
     let preferGenreInput = document.getElementById('preferGenreInput');
     let preferGenreLabel = document.getElementById('preferGenreLabel');
+    let preferContentInput = document.getElementById('preferContentInput');
+    let preferContentLabel = document.getElementById('preferContentLabel')
     let registerForm = document.getElementById('registration-form');
     let errorDiv = document.getElementById('client-side-error-div');
     if (registerForm) {
@@ -28,6 +30,8 @@
         })
         preferGenreInput.hidden = true;
         preferGenreLabel.hidden = true;
+        preferContentInput.hidden = true;
+        preferContentLabel.hidden = true;
         roleInput.addEventListener('click', () => {
             if (roleInput.value === 'user') {
                 preferGenreInput.hidden = false;
@@ -36,6 +40,14 @@
             else {
                 preferGenreInput.hidden = true;
                 preferGenreLabel.hidden = true;
+            }
+            if (roleInput.value === 'user') {
+                preferContentInput.hidden = false;
+                preferContentLabel.hidden = false;
+            }
+            else {
+                preferContentInput.hidden = true;
+                preferContentLabel.hidden = true;
             }
         })
         ageInput.addEventListener('focusin', () => {
@@ -70,6 +82,10 @@
             let genreInfo = document.getElementById('genre-info');
             genreInfo.toggleAttribute('hidden');
         })
+        preferContentInput.addEventListener('focusout', () => {
+            let contentInfo = document.getElementById('content-info');
+            contentInfo.toggleAttribute('hidden');
+        })
         registerForm.addEventListener('submit', (event) => {
             let errors = [];
             if (errorDiv) {
@@ -95,6 +111,9 @@
                 if (roleInput.value.trim().toLowerCase() === 'user') {
                     if (!preferGenreInput.value || preferGenreInput.value.trim().length === 0) {
                         errors.push("You must select a value for prefer genre.");
+                    }
+                    if(!preferContentInput.value || preferContentInput.value.trim().length === 0){
+                        errors.push("You must select an option for prefer content.");
                     }
                 }
             }

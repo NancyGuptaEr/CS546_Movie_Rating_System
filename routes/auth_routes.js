@@ -28,7 +28,7 @@ router
             checkNull(postData.confirmPasswordInput, 'Confirm password');
             checkNull(postData.ageInput, 'Age');
             checkNull(postData.roleInput, 'Role');
-            checkNull(postData.preferContentInput, 'Prefer Content');
+            postData.roleInput = postData.roleInput.toLowerCase();
             if (postData.roleInput === 'user') {
                 let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
                 postData.preferGenreInput = xss(postData.preferGenreInput);
@@ -42,10 +42,21 @@ router
                     checkString(x, 'genre values');
                     x = trimString(x);
                     x = x.toLowerCase();
+                    x = xss(x);
                     if (!preferGenres.includes(x)) {
                         throw `Prefer Genre can have action, adventure, comedy, drama, fantasy, horror, musicals, mystery, romance, science fiction, sports, thriller, and western as the value`;
                     }
                 }
+                checkNull(postData.preferContentInput, 'Prefer Content');
+                checkString(postData.preferContentInput, 'Prefer Content');
+                postData.preferContentInput = trimString(postData.preferContentInput);
+                postData.preferContentInput = postData.preferContentInput.toLowerCase();
+                if (postData.preferContentInput !== 'g' && postData.preferContentInput !== 'pg' && postData.preferContentInput !== 'pg-13' && postData.preferContentInput !== 'r' && postData.preferContentInput !== '18+') {
+                    throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
+                }
+            }
+            if (postData.roleInput === 'admin' && (postData.preferGenreInput || postData.preferContentInput)) {
+                throw `Cannot have values for prefer genre and prefer content if role is admin.`
             }
             checkString(postData.emailAddressInput, 'emailAddress');
             postData.emailAddressInput = trimString(postData.emailAddressInput);
@@ -55,8 +66,6 @@ router
             postData.confirmPasswordInput = trimString(postData.confirmPasswordInput);
             checkString(postData.roleInput, 'role');
             postData.role = trimString(postData.role);
-            checkString(postData.preferContentInput, 'Prefer Content');
-            postData.preferContentInput = trimString(postData.preferContentInput);
             let match;
             postData.emailAddressInput = postData.emailAddressInput.toLowerCase();
             if (postData.emailAddressInput.match(/[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+[.]([a-zA-Z][a-zA-Z][a-zA-Z]*)/) !== null)
@@ -82,13 +91,8 @@ router
             if (postData.passwordInput !== postData.confirmPasswordInput) {
                 throw `Confirm Password and password fields values must match.`;
             }
-            postData.roleInput = postData.roleInput.toLowerCase();
             if (postData.roleInput !== 'admin' && postData.roleInput !== 'user') {
                 throw `Role can either have admin or user as its value.`;
-            }
-            postData.preferContentInput = postData.preferContentInput.toLowerCase();
-            if (postData.preferContentInput !== 'g' && postData.preferContentInput !== 'pg' && postData.preferContentInput !== 'pg-13' && postData.preferContentInput !== 'r' && postData.preferContentInput !== '18+') {
-                throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
             }
             if (typeof postData.ageInput === 'string') {
                 postData.ageInput = trimString(postData.ageInput);
