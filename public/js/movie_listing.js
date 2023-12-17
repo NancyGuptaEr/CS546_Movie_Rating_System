@@ -4,24 +4,24 @@ function addToWatchlist(selectElement, userId) {
   var movieId = selectElement.getAttribute('data-movie-id');
   var watchlistName = selectElement.value;
   console.log(`$userId : ${userId}, movieId: ${movieId}, watchListname: ${watchlistName}`);
-
-  $.ajax({
-    url: '/add-to-watchlist', 
-    type: 'POST',
-    contentType: 'application/json', 
-    data: JSON.stringify({ 
-      userId: userId,
-      movieId: movieId,
-      watchlistName: watchlistName
-    }),
-    success: function(response) {
-      
-      console.log('Movie added to watchlist successfully');
-    },
-    error: function(xhr, status, error) {
-      
-      console.log('Error adding movie to watchlist:', error);
-    }
-  });
-
+if(watchlistName != ''){
+    $.ajax({
+      url: '/home/add-to-watchlist', 
+      type: 'POST',
+      contentType: 'application/json', 
+      data: JSON.stringify({ 
+        userId: userId,
+        movieId: movieId,
+        watchlistName: watchlistName
+      }),
+      success: function(response) {
+        
+        console.log('Movie added to watchlist successfully');
+      },
+      error: function(xhr, status, error) {
+        
+        console.log('Error adding movie to watchlist:', error);
+      }
+    });
+  }
 }

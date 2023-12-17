@@ -2,9 +2,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="../public/css/movie_listing.css">
 
-<body>
+<main>
     <div class="auth-buttons">
+        <a href="/watchlist">
         <button class="watchlist">My Watchlist</button>
+        </a>
     </div>
     
 <div class="container">
@@ -15,21 +17,22 @@
         <div class="d-flex flex-row movie-list">
             {{#each this}}
             <div class="movie">
-                <a href="/movie/{{_id}}">
+                <a href="/movies/{{_id}}">
                     <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
                     <p>Title: {{title}}</p>
                     <p>Rating: {{overall_rating}}</p>
                     <p>MPA: {{contentRating}}</p>
-                    <p>userId: {{../../userId}}</p>
-                    <p>movieId: {{_id}}</p>
-                </a>
+                    {{!-- <p>userId: {{../../userId}}</p>
+                    <p>movieId: {{_id}}</p>--}}
+                </a> 
                 {{#if ../../isLoggedIn}}
                 <div class="add-to-watchlist">
                     <span>Add to Watchlist</span>
                     <select class="watchlist-select" data-movie-id="{{_id}}" data-user-id="{{../../userId}}" onchange="addToWatchlist(this)">
-                    <p>userId: {{../../userId}}</p>
-                    <p>movieId: {{_id}}</p>
+                    {{!-- <p>userId: {{../../userId}}</p>
+                    <p>movieId: {{_id}}</p> --}}
                         <!-- Populate options here, possibly dynamically -->
+                        <option value="">Select a watchlist</option>
                         {{#each ../../watchListNames}}
                             <option value="{{this}}">{{this}}</option>
                         {{/each}}
@@ -51,13 +54,26 @@
         <div class="d-flex flex-row movie-list">
             {{#each recommendedMovies}}
             <div class="movie">      
-                <a href="/movie/{{_id}}"></a>
+                <a href="/movies/{{_id}}">
                 <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">     
                 <p>Title: {{title}}</p>
                 <p>Rating: {{overall_rating}}</p>
                 <p>MPA: {{contentRating}}</p>
                 </a>
-                
+                {{#if ../isLoggedIn}}
+                <div class="add-to-watchlist">
+                    <span>Add to Watchlist</span>
+                    <select class="watchlist-select" data-movie-id="{{_id}}" data-user-id="{{../userId}}" onchange="addToWatchlist(this)">
+                    {{!-- <p>userId: {{../userId}}</p>
+                    <p>movieId: {{_id}}</p> --}}
+                        <!-- Populate options here, possibly dynamically -->
+                        <option value="">Select a watchlist</option>
+                        {{#each ../watchListNames}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                {{/if}}
             </div>
             {{/each}}
         </div>
@@ -74,7 +90,7 @@
             <div class="d-flex flex-row movie-list">
                 {{#each this}}
                 <div class="movie">    
-                    <a href="/movie/{{_id}}">      
+                    <a href="/movies/{{_id}}">      
                     <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
                     <p>Title: {{title}}</p>
                     <p>Rating: {{overall_rating}}</p>
@@ -95,19 +111,33 @@
         <div class="d-flex flex-row movie-list">
             {{#each this}}
             <div class="movie">
-                <a href="/movie/{{_id}}">
+                <a href="/movies/{{_id}}">
                 <img src="{{thumbnail}}" alt="{{title}}" class="img-fluid">
                 <p>Title: {{title}}</p>
                 <p>Rating: {{overall_rating}}</p>
                 <p>MPA: {{contentRating}}</p>
                 </a>
+                {{#if ../../isLoggedIn}}
+                <div class="add-to-watchlist">
+                    <span>Add to Watchlist</span>
+                    <select class="watchlist-select" data-movie-id="{{_id}}" data-user-id="{{../../userId}}" onchange="addToWatchlist(this)">
+                    {{!-- <p>userId: {{../../userId}}</p>
+                    <p>movieId: {{_id}}</p> --}}
+                        <!-- Populate options here, possibly dynamically -->
+                        <option value="">Select a watchlist</option>
+                        {{#each ../../watchListNames}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                {{/if}}
             </div>
             {{/each}}
         </div>
     </div>
     {{/each}}
 </div>
-</body>
+</main>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../public/js/movie_listing.js"></script>
 </html>
