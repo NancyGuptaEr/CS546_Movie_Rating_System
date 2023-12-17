@@ -11,12 +11,10 @@ const constructorMethod = (app) => {
     app.use("/login", authRoutes);
     console.log(`about hit /home in index`);
     app.use("/home", movieListsRouter);
-    
     app.use('/users', userRoutes);
     app.use("/movies",moviesSearchRoute);
     app.use('/watchlist', watchListRoutes);
     app.use("/deleteReview", deleteReviewRoute);
-    //app.use('/users', userRoutes);
     app.use('*', (req, res) => {
 
         res.status(404).send("No such route exist.");
