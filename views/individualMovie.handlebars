@@ -49,49 +49,38 @@
         <div>
             <p><strong>User: </strong>{{this.userId}}</p>
             <p><strong>Rating: </strong>{{this.rating}}</p>
+
             <p><strong>Review: </strong>{{this.review}}</p>
             <p><strong>Date: </strong>{{this.ts}}</p>
         </div>
-        <button data-id="{{_id}}" data-review="{{this.review}}" data-rating="{{this.rating}}" type="button" class="editReview">Edit</button>
-        <button type="button" class="deleteReview">Delete</button>
+        {{#if this.showEditReviewSection}}
+            <button data-id="{{_id}}" data-review="{{this.review}}" data-rating="{{this.rating}}" type="button" class="editReview" onclick="scrollToBottom()">Edit</button>
+        {{/if}}
         
-        <div id="editModal" class="editModal">
-            <div class="editModalContent">
-                <span class="close">&times;</span>
-                <h2>Edit Review</h2>
-                <form id="editReviewForm">
-                    <div class="edit-form-group">
-                        <label for="editedRating">Rating: </label>
-                        <input type="number" id="editedRating" placeholder="Edit Rating (1-5)" min="1" max="5">
-                    </div>
-                    <div class="edit-form-group">
-                        <label for="editedReview">Review: </label>
-                        <textarea id="editedReview" placeholder="Edit Review here"></textarea>
-                    </div>
-                    
-                    <button type="submit">Save Changes</button>
-                </form>
-            </div>
-        </div>
-        <script src="/public/js/edit_review.js"></script>
         
 
-
+        {{#if this.showEditReviewSection}}
+        <button class="deleteReview"  data-movieID="{{../_id}}" onclick="deleteReview(this)" >Delete</button>
+        {{/if}}
         </li>
         {{/each}}
-    </ol>
-    
-    <form method="post" id="reviewForm" class="review-form">
-        <label for="userId">Your User ID: </label>
-        <input type="email" name="userID" id="userId" placeholder="Your User ID">
-        <label for="rating">Rating (1-5): </label>
-        <input type="number" name="rating" id="rating" placeholder="Rating (1-5)" min="1" max="5">
-        <label for="userReview">Your Review: </label>
-        <textarea id="userReview" name="review" placeholder="your review"></textarea>
-        <button type="submit" id="submitreview">Submit Review</button>
-        <p id="errors">
 
-        </p>
-    </form>
+        <h3>Add Review</h3>
+
+    {{#if isLoggedIn}}
+    <form method="post" id="reviewForm" class="review-form">
+        <label for="userID">UserID: </label>
+        <input type="email" name="userID" id="userId" placeholder="{{emailAddress}}" value="{{emailAddress}}" readonly>
+        <input type="hidden" name="movieId" id="movieId" value="{{_id}}">
+        <label for="rating">Rating (1-5): </label>
+        <input type="number" name="rating" id="rating" placeholder="Rating (1-5)" min="1" max="5" value="{{CurrentUserRating}}">
+        <label for="userReview">Your Review: </label>
+        <textarea id="userReview" name="review" placeholder="your review">{{CurrentUserReview}}</textarea>
+        <button type="submit" id="submitreview">Submit Review</button>
+        <p id="errors"></p>
+        </form>
+   {{/if}}
+    <div id="bottom"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/public/js/review_form.js"></script>
     </body>
