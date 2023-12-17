@@ -54,7 +54,7 @@ export const registerUser = async (
     if (preferContent !== 'g' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'r' && preferContent !== '18+') {
       throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
     }
-    preferContent = preferContent.toUpperCase();
+    //preferContent = preferContent.toUpperCase();
   }
   
   checkString(emailAddress, 'emailAddress');
@@ -114,6 +114,7 @@ export const registerUser = async (
   if (role !== 'admin' && role !== 'user') {
     throw `Role can either have admin or user as its value.`;
   }
+  //preferContent = preferContent.toLowerCase();
   let isAdmin;
   if (role === 'admin')
     isAdmin = true;
