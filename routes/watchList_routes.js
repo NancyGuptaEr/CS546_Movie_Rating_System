@@ -3,6 +3,7 @@ import { movieListingDataFuncs } from "../data/index.js";
 import { compareSync } from "bcrypt";
 import * as please from '../helper.js';
 import { ObjectId } from "mongodb";
+import xss from 'xss';
 
 const router = Router();
 
@@ -40,7 +41,7 @@ router.route('/').get(async (req,res) => {
         }
         
         // res.render('watchList',)
-        res.render('watchList', {UserWatchListMovies: newMovieInfo, userId: userId, isWatchlistEmpty: isWatchlistEmpty});
+        res.render('watchList', {title: 'My Watchlist', UserWatchListMovies: newMovieInfo, userId: userId, isWatchlistEmpty: isWatchlistEmpty});
     }
 }
 catch(error){
@@ -55,9 +56,9 @@ router.route('/remove-Watch-list').post(async (req,res) => {
     console.log(`entered for post routes for removing watchlist`);
     try{
     if(req.session.user){
-        const deletionInfo = req.body;
-        let userId = req.session.user._id;
-        let watchListName = req.body.watchlistName;
+        const deletionInfo = xss(req.body);
+        let userId = xss(req.session.user._id);
+        let watchListName = xss(req.body.watchlistName);
         userId = please.checkStr(userId,"User Id");
         if(!ObjectId.isValid(userId)){
             throw `userId isn't a valid objectID`;
@@ -89,9 +90,9 @@ router.route('/remove-movie-watchList').post(async(req, res)=> {
     console.log(`movie deletion route......`);
     console.log(req.body);
     try{
-    let userId = req.body.userId;
-    let movieId = req.body.movieId;
-    let watchlistName = req.body.watchlistName;
+    let userId = xss(req.body.userId);
+    let movieId = xss(req.body.movieId);
+    let watchlistName = xss(req.body.watchlistName);
 
     
 
@@ -118,10 +119,10 @@ catch(error){
 
 router.route('/create-watchlist').post(async(req, res)=> {
     try{
-    let userId = req.session.user._id;
+    let userId = xss(req.session.user._id);
     console.log(`userid: ${userId}, watchlistName: ${req.body.watchlistName}`);
     
-    const watchListName = req.body.watchlistName;
+    const watchListName = xss(req.body.watchlistName);
     const watchlistData = await movieListingDataFuncs.addWatchList(watchListName, userId);
     if(watchlistData){
         console.log(`watchlist creation complete reload page`);

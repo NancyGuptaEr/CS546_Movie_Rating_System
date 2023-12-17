@@ -91,64 +91,118 @@ img.icon  {
   margin-left: 10px;
 }
 
-.editModal {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fefefe;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000; 
-}
-.editModalContent {
-  width: 300px; /* Adjust the width as needed */
+
+.review-form {
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin-right: 20px
 }
 
-.editModalContent h2 {
-  margin-top: 0;
+.review-form label, .review-form input[type="email"], .review-form input[type="number"], .review-form textarea, .review-form button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box; 
 }
 
-.editModalContent .edit-form-group {
-  margin-bottom: 15px;
+.review-form input[type="email"], .review-form input[type="number"], .review-form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.editModalContent label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+.review-form button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.editModalContent input[type="number"],
-.editModalContent textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
+.review-form button:hover {
+    background-color: #0056b3;
 }
 
-.editModalContent button[type="submit"] {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.review-content {
+    max-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: max-height 0.3s ease;
 }
 
-.editModalContent button[type="submit"]:hover {
-  background-color: #0056b3;
+.review-content:hover {
+    max-height: none;
+    white-space: normal;
 }
 
-.close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  cursor: pointer;
-  font-size: 20px;
-  color: #aaa;
+.search-movies {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 15px; 
 }
+
+.movie {
+    flex: 0 0 auto;
+    width: 200px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-right: 15px;
+}
+
+.movie:last-child {
+    margin-right: 0;
+}
+
+.movie img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.movie p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+    .movie p {
+        font-size: smaller;
+    }
+}
+
+.movie p {
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.search-movies::-webkit-scrollbar {
+    height: 6px; 
+}
+
+.container {
+    width: 90%;
+    max-width: none; 
+    margin: 0 auto; 
+}
+
+.section {
+    padding: 20px;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+

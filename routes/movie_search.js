@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 import * as helpers from "../helper.js";
 import * as searchMovies from '../data/search_movie.js';
+import xss from 'xss';
 
 import { movies } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
@@ -16,9 +17,7 @@ router.route('/').get(async (req, res)   =>  {
     })
     .post(async (req, res)  =>  {
         console.log("i have entered the post routes");
-        // console.log(`req.body`);
-        // console.log(req.body)
-        let movieName = req.body.Search;
+        let movieName = xss(req.body.Search);
         console.log(movieName);
         try {
             console.log(`movie name before validation is ${movieName}`);
@@ -139,18 +138,18 @@ router.route('/:MovieId')
         console.log(`userID is ${req.session.user.emailAddress}`);
         console.log(req.body);
         //write code here to submit a review
-        let userId = req.session.user.emailAddress;
+        let userId = xss(req.session.user.emailAddress);
         console.log(`userId: ${userId}`);
         console.log(`rating: ${req.body.ratingValue}`);
         console.log(`review is: ${req.body.reviewValue}`)
         console.log(`movie id: ${req.body.movieId}`);
     
 
-        let rating = req.body.ratingValue;
+        let rating = xss(req.body.ratingValue);
         console.log(`rating is ${rating}`);
-        let review = req.body.reviewValue;
+        let review = xss(req.body.reviewValue);
         console.log(`review is ${review}`);
-        let movieId = req.body.movieId;
+        let movieId = xss(req.body.movieId);
         console.log(`movie id is ${movieId}`);
         try {
             userId = helpers.isValidEmail(userId);

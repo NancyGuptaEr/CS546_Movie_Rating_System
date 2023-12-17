@@ -45,7 +45,7 @@ $(document).ready(function()  {
       if(reviewValue.length === 0) {
         throw 'review cannot be just empty spaces';
       }
-      const regex = /^[a-zA-Z0-9\s,:;'"/!@()\-*$%&#]+$/;
+      const regex = /^[a-zA-Z0-9\s,:;'"/!@()\[\]\-*$%&#^+=.]+$/;
       if(!regex.test(reviewValue)) {
         throw 'Review contains invalid characters';
       }

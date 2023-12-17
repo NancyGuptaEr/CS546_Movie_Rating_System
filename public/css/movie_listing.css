@@ -23,15 +23,14 @@
     background-color: #ced4da;
 }
 
-/* General movie list styles */
 .movie-list {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 15px;
+    gap: 15px; 
 }
 
-/* Movie card styles */
+
 .movie {
     flex: 0 0 auto;
     width: 200px;
@@ -43,7 +42,7 @@
 }
 
 .movie:last-child {
-    margin-right: 0; 
+    margin-right: 0;
 }
 
 .movie img {
@@ -59,7 +58,7 @@
     margin: 4px 0;
 }
 
-/* Responsive text size */
+
 @media (max-width: 768px) {
     .movie p {
         font-size: smaller;
@@ -72,17 +71,15 @@
     overflow-wrap: break-word;
 }
 .movie-list::-webkit-scrollbar {
-    height: 6px;
+    height: 6px; 
 }
 .container {
     width: 90%;
     max-width: none; 
-    margin: 0 auto;
+    margin: 0 auto; 
 }
 
-
-
-  .auth-buttons {
+.auth-buttons {
     position: relative;
     top: 0;
     right: 0;
