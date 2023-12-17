@@ -79,11 +79,11 @@ const addReview = async(movieId, userId, rating, review)  =>  {
     const formattedDate = new Date().toISOString().split('T')[0];
     console.log(`formatted date is ${formattedDate}`);
 
-    if(existingUserIndex !== -1)    {
+    if(existingUserIndex !== -1)    { // this means the review exists by that user Id
         movie.reviews[existingUserIndex] = {userId, rating, review, ts: formattedDate};
         // movie.Reviews = movie.Reviews.filter(user   =>  user.userId !== userId);
     }else   {
-        movie.reviews.push({userId, rating, review, ts: formattedDate});
+        movie.reviews.push({userId, rating, review, ts: formattedDate,flaggedTimes: 0});
     }
     
     console.log("i have inserted the review in database");

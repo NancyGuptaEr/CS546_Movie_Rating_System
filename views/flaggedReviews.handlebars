@@ -25,10 +25,10 @@
             <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold mb-1">Movie: {{this.title}}</div>
-                    <div class="mb-1">Review Content: {{this.text}}</div>
+                    <div class="mb-1">Review Content: {{this.review}}</div>
                     <div>Flagged Times:{{this.flaggedTimes}}</div>
                 </div>
-                <button class="btn btn-danger deleteFlaggedReview-button" data-review-id="{{this._id}}">Delete</button>
+                <button class="btn btn-danger deleteFlaggedReview-button" data-review-id="{{this.userId}}">Delete</button>
             </div>
             {{/each}}
         </div>

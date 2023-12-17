@@ -56,9 +56,7 @@ export const registerUser = async (
     }
     preferContent = preferContent.toUpperCase();
   }
-  if (role === 'admin' && (preferGenre || preferContent)) {
-    throw `Cannot have values for prefer genre and prefer content if role is admin.`
-  }
+  
   checkString(emailAddress, 'emailAddress');
   checkString(password, 'Password');
   emailAddress = trimString(emailAddress).toLowerCase();

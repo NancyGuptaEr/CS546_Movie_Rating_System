@@ -31,12 +31,13 @@ app.use('/', (req, res, next) => {
   if (!req.session.user) {
       console.log(new Date().toUTCString(), req.method, req.originalUrl, "(Non-Authenticated User)");
       if (req.originalUrl === '/') {
-          res.redirect("/login");
+          res.redirect("/movies");
       }
       else{
-          next();
+        next();
       }
   }
+ 
   if (req.session.user) {
       console.log(new Date().toUTCString(), req.method, req.originalUrl, "(Authenticated User)");
       if(req.originalUrl === '/'){
@@ -44,7 +45,7 @@ app.use('/', (req, res, next) => {
               res.redirect("/admin");
           }
           else
-          res.redirect("/users");
+          res.redirect("/home");
       }
       else
           next();
@@ -58,7 +59,7 @@ app.use('/login', (req, res, next) => {
               res.redirect("/admin");
           }
           else
-          res.redirect("/users");
+          res.redirect("/home");
       }
       else
           next();
@@ -74,7 +75,7 @@ app.use('/register', (req, res, next) => {
               res.redirect("/admin");
           }
           else
-          res.redirect("/users");
+          res.redirect("/home");
       }
       else
           next();
@@ -99,7 +100,7 @@ app.use('/admin', (req, res, next) => {
   if (req.method === 'GET') {
       if (req.session.user) {
           if (!req.session.user.isAdmin) {
-              res.redirect("/error");
+              res.redirect("/home");
           }
           else
               next();
@@ -110,7 +111,41 @@ app.use('/admin', (req, res, next) => {
   else
       next();
 })
-
+app.use('/movies', (req, res, next) => {
+  if(req.method === "GET"){
+    if(req.session.user && req.originalUrl === "/movies"){
+      console.log(req.originalUrl);
+      res.redirect('/home');
+    }
+    else{
+      next()
+    }
+  }
+  else{
+    next();
+  }
+})
+app.use('/watchlist',(req, res, next)=> {
+  if(req.method === "GET"){
+    if(!req.session.user){
+      res.redirect('/movies');
+    }
+    else{
+      next();
+    }
+  }
+})
+app.use('/home',(req, res, next)=> {
+  if(req.method === "GET"){
+    if(req.session.user){
+      if(req.session.user.isAdmin)
+        res.redirect('/movies');
+    }
+    else{
+      next();
+    }
+  }
+})
 app.use('/logout', (req, res, next) => {
   if (req.method === 'GET') {
       if (req.session.user) {

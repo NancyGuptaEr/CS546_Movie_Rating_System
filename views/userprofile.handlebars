@@ -36,6 +36,7 @@
             <div class="form-text" id="role-info" hidden>You must select a role from the given options in the dropdown.
             </div>
         </div>
+        {{#unless user.isAdmin}}
         <div class="mb-3">
             <label class="form-label" for="preferGenreInput" id="preferGenreLabel">Select genres</label>
             <select class="form-select" name="preferGenreInput" id="preferGenreInput" multiple>
@@ -60,6 +61,7 @@
                 </ul>
             </div>
         </div>
+        
         <div class="mb-3">
             <label class="form-label" for="preferContentInput" id="preferContentLabel">Set preferred content</label>
             <select class="form-select" name="preferContentInput" id="preferContentInput">
@@ -73,6 +75,7 @@
                You must select a prefer content from the given options in the dropdown.
             </div>
         </div>
+        {{/unless}}
         <button type="submit" class="btn btn-primary">Submit</button>
         <div id="client-side-error-div" hidden></div>
     </form>

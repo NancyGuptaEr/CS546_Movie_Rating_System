@@ -17,7 +17,7 @@ export const createReviews = async (
         reviews: {
           _id: new ObjectId(),
           userId,
-          text,
+          review,
           rating,
           ts,
           flaggedTimes,
@@ -44,20 +44,26 @@ export const getMoviesByFlaggedTimes = async () => {
     acc.push(...reviewsWithTitles);
     return acc;
   }, []);
+  console.log(`flaggedReviews db file getmovisbyflaggedtimes printing contents of return flaggedReviews: `);
+  console.log(flaggedReviews);
   return flaggedReviews;
 };
 
 export const removeByFlaggedTimes = async (reviewId) => {
+  console.log(`entered removedbyflagged time db function`)
   reviewId = checkStr(reviewId, "reviewId");
-  if (!ObjectId.isValid(reviewId)) throw "the reviewId is not valid";
+  // if (!ObjectId.isValid(reviewId)) throw "the reviewId is not valid";
+  console.log(`contents in reviewId: ${reviewId}`);
   const moviesCollection = await movies();
   const targetReview = await moviesCollection.findOne({
-    reviews: { $elemMatch: { _id: new ObjectId(reviewId) } },
+    reviews: { $elemMatch: { userId: reviewId } },
   });
+  console.log(`target revieww....`);
+  console.log(targetReview);
   if (!targetReview) throw "the review does not exist";
   const deleteInfo = await moviesCollection.findOneAndUpdate(
-    { _id: new ObjectId(targetReview._id) },
-    { $pull: { reviews: { _id: new ObjectId(reviewId) } } },
+    {_id: new ObjectId(targetReview._id) },
+    { $pull: { reviews: { userId: reviewId } } },
     { returnDocument: "after" }
   );
   if (!deleteInfo) throw "deleting failed";

@@ -6,6 +6,7 @@ import * as please from '../helper.js'
 let exportedMethods = {
 
     async getWatchList(userId){
+        console.log(`entering db  function for getwatchlist`);
         userId = please.checkStr(userId);
 
         if(!ObjectId.isValid(userId)){
@@ -26,8 +27,8 @@ let exportedMethods = {
         let userInfo = await userData.find({_id: new ObjectId(userId)}).project(watchListProjection).toArray();
 
         userInfo = userInfo[0].watchList;
-        console.log(`printing userinfo:`);
-        console.log(userInfo);
+        // console.log(`printing userinfo:`);
+        // console.log(userInfo);
         let returnWatchListObject = {};
         
         for (let watchList in userInfo){
@@ -47,13 +48,13 @@ let exportedMethods = {
                 }
             }
         }
-        console.log(`printing returnmovieovject:`);
-        console.log(returnWatchListObject);
+        // console.log(`printing returnmovieovject:`);
+        // console.log(returnWatchListObject);
         return returnWatchListObject;
     },
 
     async getMoviesByGenreWithoutLogin(){
-
+        console.log(`entering db function of getmoviesbygnerewithoutloging`);
         const movieData = await movies();
         const genreList = await movieData.distinct('genre');
         console.log(`All genres in the collection:`);
@@ -75,7 +76,7 @@ let exportedMethods = {
             uniqueGenres.add(newGenre);
         }
         uniqueGenres = Array.from(uniqueGenres); //Here we have 3 random and unique genres in the array
-        console.log(`Random unique genres are: ${uniqueGenres}`);
+        // console.log(`Random unique genres are: ${uniqueGenres}`);
         const movieListProjection = {_id: 1, title: 1, contentRating: 1, thumbnail: 1, overall_rating: 1};
 
         let MoviesObject = {};
@@ -106,7 +107,7 @@ let exportedMethods = {
     },
 
     async getMoviesWithLogin(userId){
-        
+        console.log(`entering db functions for getmovieswithlogin`);
         userId = please.checkStr(userId, "User ID");
         if(!ObjectId.isValid(userId)){
             throw `User ID isn't a valid object ID`;
@@ -156,7 +157,7 @@ let exportedMethods = {
         }
         const allowedContentRatings = returnContentRatings(maxContentRating);//here we have a array for all content ratings that are legal to user
 
-        console.log(`user preferedGenres are: ${preferedGenres}`);
+        // console.log(`user preferedGenres are: ${preferedGenres}`);
         console.log(`content ratings for user: ${allowedContentRatings}`);
     
         const movieData = await movies();
@@ -271,12 +272,13 @@ let exportedMethods = {
         //                          [{movie1,movie2,etc}],     //movies recommended based on user genres
         //                          {watchListName:[movies]},  //movies from watchlist
         //                          [movies] ]                 //top 10 on cineratings
-        console.log(`_______________________________________________________`);
-        console.log(retrunArray);
+        // console.log(`_______________________________________________________`);
+        // console.log(retrunArray);
         
         return retrunArray;
     },
     async checkWatchListExists(watchListName, userId){
+        console.log(`entering db functionns  for checkwatchliststexist`);
         watchListName = please.checkStr(watchListName, "Watch List Name");
         userId = please.checkStr(userId, "User Id");
 
@@ -305,6 +307,7 @@ let exportedMethods = {
         }
     },
     async addWatchList(watchListName, userId){
+        console.log(`entering db functions for add watchlist`)
         watchListName = please.checkStr(watchListName, "Watch List Name");
         userId = please.checkStr(userId, "User ID");
 
@@ -325,14 +328,14 @@ let exportedMethods = {
         const userInfo = await userData.findOneAndUpdate({_id: new ObjectId(userId)},
         {$set: {[`watchList.${watchListName}`]:[]}},
         {returnDocument: 'after'});
-        console.log(userInfo);
+        // console.log(userInfo);
         if(!userInfo) {
             throw `There was a problem adding watchlist`;
         }
         return true;
     },
     async addMovieToWatchList(movieId, watchListName, userId){
-
+            console.log(`entering db fucntinos for add movie to watchlist`);
             movieId = please.checkStr(movieId, "Movie ID");
             userId = please.checkStr(userId, "user ID");
             watchListName = please.checkStr(watchListName, "Watch List Name");
@@ -384,11 +387,11 @@ let exportedMethods = {
             if(!movieInsertedInWatchList){
                 throw `there was a problem inserting the movie to the watchlist`
             }
-            console.log(movieInsertedInWatchList);
+            // console.log(movieInsertedInWatchList);
             return true;
     },
     async removeMovieFromWatchList(userId, movieId, watchListName){
-
+        console.log(`entering db functins for removemoviefrom watchlist`);
         userId = please.checkStr(userId, "user ID");
         movieId = please.checkStr(movieId, "Movie ID")
         watchListName = please.checkStr(watchListName,"Watch list name");
@@ -431,7 +434,7 @@ let exportedMethods = {
         removeMovie.$pull[`watchList.${watchListName}`] = new ObjectId(movieId);
 
         const result = await userData.updateOne({ _id: new ObjectId(userId)}, removeMovie);
-        console.log(`ObjectId removed from ${watchListName} array`, result);
+        // console.log(`ObjectId removed from ${watchListName} array`, result);
         if(!result.acknowledged){
             throw `There was a problem deleting movie from the db`;
         }

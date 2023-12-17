@@ -55,9 +55,7 @@ router
                     throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
                 }
             }
-            if (postData.roleInput === 'admin' && (postData.preferGenreInput || postData.preferContentInput)) {
-                throw `Cannot have values for prefer genre and prefer content if role is admin.`
-            }
+            
             checkString(postData.emailAddressInput, 'emailAddress');
             postData.emailAddressInput = trimString(postData.emailAddressInput);
             checkString(postData.passwordInput, 'password');
@@ -186,17 +184,17 @@ router
                     res.redirect("/admin");
                 }
                 else
-                    res.redirect("/users");
+                    res.redirect("/home");
             }
         } catch (e) {
             return res.status(400).render("login", { authUser: req.session.user, title: 'login', hasError: true, error: e, postData });
         }
     });
 
-router.route('/error').get(async (req, res) => {
-    //code here for GET
-    return res.status(403).render("error", { authUser: req.session.user, title: 'error' });
-});
+// router.route('/error').get(async (req, res) => {
+//     //code here for GET
+//     return res.status(403).render("error", { authUser: req.session.user, title: 'error' });
+// });
 
 router.route('/logout').get(async (req, res) => {
     //code here for GET

@@ -309,6 +309,8 @@ adminMoviesRouter
   .get(isAdminAuthenticated, async (req, res) => {
     try {
       const allFlaggedReviews = await getMoviesByFlaggedTimes();
+      console.log(`printing allflaggedreviews for rendering on webpage`);
+      console.log(allFlaggedReviews)
       return res.render("flaggedReviews", { allFlaggedReviews });
     } catch (e) {
       return res.status(404).json({ error: e });
@@ -318,14 +320,20 @@ adminMoviesRouter
 adminMoviesRouter
   .route("/flaggedReviews/:reviewId")
   .delete(isAdminAuthenticated, async (req, res) => {
+    console.log(`adminMoviesRouter/delete called from webpage`);
+    console.log(req.params);
     let reviewId = xss(req.params.reviewId);
+    console.log(`contnets in reviewId: ${reviewId}`);
     try {
+
       reviewId = checkStr(reviewId, "reviewId");
-      if (!ObjectId.isValid(reviewId)) throw "the reviewId is not valid";
+      // if (!ObjectId.isValid(reviewId)) throw "the reviewId is not valid";
+
     } catch (e) {
       return res.status(400).json({ error: e });
     }
     try {
+      console.log(`calling removebyflaggedtimes db function`)
       const deleteInfo = await removeByFlaggedTimes(reviewId);
       if (!deleteInfo) throw "deleting failed";
       return res.render("flaggedReviews");
