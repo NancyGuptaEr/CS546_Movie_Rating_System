@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Group 21: Yash Gandhi - 20022015 | Nancy Gupta | Jinghao Huang | Vivek Singh",
+  "author": "Group 21: Nancy Gupta | Jinghao Huang | Yash Gandhi | Vivek Singh",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

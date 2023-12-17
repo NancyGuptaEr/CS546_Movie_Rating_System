@@ -14,7 +14,8 @@
     </p>
 </div>
     <div class="watchlist-section section">
-        <h2 class="section-title">Your Watchlists:</h2>
+        <h2 class="section-title">Your Watchlists:
+        </h2>
         {{#each UserWatchListMovies}}
         <div class="genre-section section">
             <h2 class="section-title">{{@key}}</h2> 
@@ -51,6 +52,9 @@
         </div>
         {{/each}}
     </div>
+    <a href="/home">
+    <h2>My Movie Page</h2>
+    </a>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/js/watchListValidation.js"></script>
 </main>

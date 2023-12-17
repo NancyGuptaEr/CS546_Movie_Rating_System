@@ -42,7 +42,9 @@
         <p><strong>MPA: </strong>{{mpa}}</p>
         <p><strong>Rating: </strong>{{overall_rating}}</p>
 
+    {{#if reviews}}
      <h3>Reviews</h3>
+     
      <ol>
         {{#each reviews}}
         <li>
@@ -57,20 +59,24 @@
             <button data-id="{{_id}}" data-review="{{this.review}}" data-rating="{{this.rating}}" type="button" class="editReview" onclick="scrollToBottom()">Edit</button>
         {{/if}}
         
-        
-
         {{#if this.showEditReviewSection}}
         <button class="deleteReview"  data-movieID="{{../_id}}" onclick="deleteReview(this)" >Delete</button>
         {{/if}}
         </li>
         {{/each}}
+        </ol>
+        {{else}}
+     <h3>No Reviews</h3>
+     {{/if}}
 
-        <h3>Add Review</h3>
+        
 
     {{#if isLoggedIn}}
+    <h3>Add Review</h3>
     <form method="post" id="reviewForm" class="review-form">
         <label for="userID">UserID: </label>
         <input type="email" name="userID" id="userId" placeholder="{{emailAddress}}" value="{{emailAddress}}" readonly>
+        {{!-- <p>emailAddress: {{emailAddress}}</p  > --}}
         <input type="hidden" name="movieId" id="movieId" value="{{_id}}">
         <label for="rating">Rating (1-5): </label>
         <input type="number" name="rating" id="rating" placeholder="Rating (1-5)" min="1" max="5" value="{{CurrentUserRating}}">

@@ -31,8 +31,16 @@ router.route('/').get(async (req,res) => {
         }
         console.log(`printing new movie info #####################################`);
         console.log(newMovieInfo);
+        let isWatchlistEmpty = false;
+        let watchlistArray = Array.from(newMovieInfo);
+        console.log(watchlistArray);
+        if(watchlistArray.length < 1){
+            console.log(`watchlsit is empty`);
+            isWatchlistEmpty = true
+        }
+        
         // res.render('watchList',)
-        res.render('watchList', {UserWatchListMovies: newMovieInfo, userId: userId});
+        res.render('watchList', {UserWatchListMovies: newMovieInfo, userId: userId, isWatchlistEmpty: isWatchlistEmpty});
     }
 }
 catch(error){

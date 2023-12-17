@@ -16,6 +16,8 @@ router.route('/').get(async (req, res)   =>  {
     })
     .post(async (req, res)  =>  {
         console.log("i have entered the post routes");
+        // console.log(`req.body`);
+        // console.log(req.body)
         let movieName = req.body.Search;
         console.log(movieName);
         try {
@@ -40,7 +42,8 @@ router.route('/').get(async (req, res)   =>  {
                     MPA: movie.contentRating
                 };
             });
-    
+            
+            
             if(searchedMovie.length === 0){
                 res.render("searchpage", {MovieId: MovieId, title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies", movies: searchedMovie, error: "No results found"});
             }
@@ -65,6 +68,8 @@ router.route('/:MovieId')
 
             if(req.session.user){
                 isLoggedIn = true;
+                console.log(`REQ.SESSION.USER@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`)
+                console.log(req.session.user);
                 let emailAddress = req.session.user.emailAddress;
                 console.log("i have done error checking in routes: emailAddressof useris: "+emailAddress);
                 let movie = await searchMovies.getSingleMovies(req.params.MovieId);
