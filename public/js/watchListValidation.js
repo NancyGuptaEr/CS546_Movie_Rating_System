@@ -163,21 +163,22 @@ function removeWatchlist(selectElement, userId) {
         // AJAX request
         console.log(`entering ajax`);
         $.ajax({
-            url: '/watchlist/create-watchlist', // Replace with your server endpoint
+            url: '/watchlist/create-watchlist',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
                 watchlistName: watchlistName
             }),
             success: function(response) {
-                alert(`Watchlist Created successfully`);
-                window.location.reload();
+                alert(`Watchlist Created successfully! Now you can add movies in your Watchlist.`);
+                //window.location.reload();
+                window.location.href = 'http://localhost:3000/home';
                 console.log('Watchlist created successfully');
-                // Additional success handling here, like redirecting or updating the UI
+
             },
-            error: function(xhr, status, error) {
+            error: function(error) {
                 console.error('Error creating watchlist:', error);
-                // Handle the error, like showing an error message to the user
+                
             }
         });
     }catch(error){

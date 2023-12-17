@@ -4,6 +4,7 @@ import * as helpers from "../helper.js";
 import * as searchmovies from "../data/search_movie.js"
 import { movies } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
+import xss from 'xss';
 
 
 router.route('/').post(async(req, res)  =>  {
@@ -11,11 +12,11 @@ router.route('/').post(async(req, res)  =>  {
     console.log(`userID is ${req.session.user.emailAddress}`);
     console.log(req.body);
     //write code here to submit a review
-    let userId = req.session.user.emailAddress;
+    let userId = xss(req.session.user.emailAddress);
     console.log(`userId: ${userId}`);
     console.log(`movie id: ${req.body.movieId}`);
 
-    let movieId = req.body.movieId;
+    let movieId = xss(req.body.movieId);
     console.log(`movie id is ${movieId}`);
     try {
         userId = helpers.isValidEmail(userId);

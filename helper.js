@@ -79,7 +79,7 @@ export const checkReview = (review) =>  {
   if(review.length === 0) {
     throw 'review cannot be just empty spaces';
   }
-  const regex = /^[a-zA-Z0-9\s,:;'"/!@()\-*$%&#]+$/;
+  const regex = /^[a-zA-Z0-9\s,:;'"/!@()\[\]\-*$%&#^+=.]+$/;
   if(!regex.test(review)) {
     throw 'Review contains invalid characters';
   }

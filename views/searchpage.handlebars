@@ -1,5 +1,5 @@
 
-<body>
+<main>
 <header>
  
     <div id="errors"></div>   
@@ -8,7 +8,7 @@
 
      <section class="explore-section">
         <h2>Explore what's streaming</h2>
-        <div id="searchResults">
+        <div class="search-movies" id="searchResults">
         {{#each movies}}
         <div class="movie">
             <a href="/movies/{{MovieId}}">
@@ -22,5 +22,6 @@
         </div>
         {{/each}}
         </div>
+        </section>
 
-    </body>
+    </main>

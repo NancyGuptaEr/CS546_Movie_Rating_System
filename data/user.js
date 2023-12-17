@@ -30,8 +30,6 @@ export const updateUser = async (
   checkNull(age, 'Age');
   checkNull(role, 'role');
   checkString(role, 'role');
-  checkNull(preferContent, 'Prefer Content');
-  checkString(preferContent, 'Prefer Content');
   if (role === 'user') {
     let preferGenres = ["action", "adventure", "comedy", "drama", "fantasy", "horror", "musicals", "mystery", "romance", "science fiction", "sports", "thriller", "western"];
     checkNull(preferGenre, 'Prefer Genre');
@@ -63,6 +61,13 @@ export const updateUser = async (
           throw `Prefer Genre can have action, adventure, comedy, drama, fantasy, horror, musicals, mystery, romance, science fiction, sports, thriller, and western as the value`;
         }
       }
+    }
+    checkNull(preferContent, 'Prefer Content');
+    checkString(preferContent, 'prefer content');
+    preferContent = preferContent.toLowerCase();
+    preferContent = trimString(preferContent);
+    if (preferContent !== 'g' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'r' && preferContent !== '18+') {
+      throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
     }
   }
   checkString(emailAddress, 'emailAddress');
@@ -105,11 +110,6 @@ export const updateUser = async (
   if (role !== 'admin' && role !== 'user') {
     throw `Role can either have admin or user as its value.`;
   }
-  preferContent = preferContent.toLowerCase();
-  preferContent = trimString(preferContent);
-  if (preferContent !== 'g' && preferContent !== 'pg' && preferContent !== 'pg-13' && preferContent !== 'r' && preferContent !== '18+') {
-    throw `Prefer Content can either have G, PG, PG-13, R, NC-17 as the value.`;
-  }
   const userCollection = await users();
   const user = await userCollection.findOne({ _id: new ObjectId(userid) });
   let maxContentRating = preferContent;
@@ -125,7 +125,7 @@ export const updateUser = async (
     if (!updateInfo) throw "update failed";
     return updateInfo;
   }
-  else{
+  else {
     const updateInfo = await userCollection.findOneAndUpdate(
       {
         _id: new ObjectId(userid),

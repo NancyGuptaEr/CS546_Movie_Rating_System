@@ -23,7 +23,7 @@
         <input type="text" name="Search" id="searchInput">
          <button type="submit"><img class="icon" src="/public/Images/microscope_icon.jpg" alt="Search"></button>
          </form> 
-         
+         <script src="/public/js/search_form.js"></script>
    </div>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -74,16 +74,12 @@
         <li class="nav-item">
           <a class="nav-link" href="/login">Login</a>
         </li>
+        <script src="/public/js/client_side_validation.js"></script>
         {{/if}}
       </ul>
     </div>
   </nav>
   <!-- page content -->
   {{{body}}}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/public/js/search_form.js"></script>
-  <script src="/public/js/login_page.js"></script>
-  <script src="/public/js/register_form.js"></script>
-
 </body>
 </html>

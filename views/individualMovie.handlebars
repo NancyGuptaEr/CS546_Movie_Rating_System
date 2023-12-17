@@ -1,5 +1,5 @@
 
-<body>
+<main>
 <header>
     
     <h2>{{title}}</h2>
@@ -50,10 +50,11 @@
         <li>
         <div>
             <p><strong>User: </strong>{{this.userId}}</p>
+            <p><strong>Date: </strong>{{this.ts}}</p>
             <p><strong>Rating: </strong>{{this.rating}}</p>
 
-            <p><strong>Review: </strong>{{this.review}}</p>
-            <p><strong>Date: </strong>{{this.ts}}</p>
+            <p class="review-content"><strong>Review: </strong>{{this.review}}</p>
+            
         </div>
         {{#if this.showEditReviewSection}}
             <button data-id="{{_id}}" data-review="{{this.review}}" data-rating="{{this.rating}}" type="button" class="editReview" onclick="scrollToBottom()">Edit</button>
@@ -70,11 +71,13 @@
      {{/if}}
 
         
-
+    </section>
     {{#if isLoggedIn}}
     <h3>Add Review</h3>
     <form method="post" id="reviewForm" class="review-form">
-        <label for="userID">UserID: </label>
+        <div>  
+        <div class="review-text">
+        <label for="userId">UserID: </label>
         <input type="email" name="userID" id="userId" placeholder="{{emailAddress}}" value="{{emailAddress}}" readonly>
         {{!-- <p>emailAddress: {{emailAddress}}</p  > --}}
         <input type="hidden" name="movieId" id="movieId" value="{{_id}}">
@@ -83,10 +86,12 @@
         <label for="userReview">Your Review: </label>
         <textarea id="userReview" name="review" placeholder="your review">{{CurrentUserReview}}</textarea>
         <button type="submit" id="submitreview">Submit Review</button>
-        <p id="errors"></p>
+        </div>
+        <p id="errors"></p> 
+        </div>
         </form>
    {{/if}}
     <div id="bottom"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/public/js/review_form.js"></script>
-    </body>
+    </main>
