@@ -14,7 +14,7 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       {{!-- <a class="navbar-brand" href="#">CineRatings</a> --}}
-      <a href="/landingpage">
+      <a href="/movies">
       <img class="logo" src="/public/Images/cineratings_logo.jpg" alt="CineRatings Logo">
       </a>
     </div>
@@ -74,12 +74,13 @@
         <li class="nav-item">
           <a class="nav-link" href="/login">Login</a>
         </li>
-        <script src="/public/js/client_side_validation.js"></script>
         {{/if}}
       </ul>
     </div>
   </nav>
   <!-- page content -->
   {{{body}}}
+  <script src="/public/js/login_page.js"></script>
+  <script src="/public/js/register_form.js"></script>
 </body>
 </html>

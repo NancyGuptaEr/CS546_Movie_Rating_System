@@ -63,7 +63,7 @@ const addReview = async(movieId, userId, rating, review)  =>  {
     console.log(`user id in data file after validation is ${userId}`);
 
     console.log("i have done input validation in data file");
-    console.log(`my movie name for which review is to be posted is ${movieId}`);
+    console.log(`my movie id for which review is to be posted is ${movieId}`);
 
     const movieCollection = await movies();
     let movie = await movieCollection.findOne({_id: new ObjectId(movieId)});
@@ -110,9 +110,53 @@ const addReview = async(movieId, userId, rating, review)  =>  {
     return updatedInfo;
 }
 
+const deleteReview = async(userId, movieId) =>  {
+    console.log("i have entered data file to delete the review");
+    console.log(`userId : ${userId}`);
+    console.log(`movie id: ${movieId}`);
+    movieId = helpers.checkId(movieId);
+    console.log(`movie id in data file before validation is ${userId}`);
+    userId = helpers.isValidEmail(userId);
+    console.log(`user id in data file after validation is ${userId}`);
+
+    console.log("i have done input validation in data file for deleting the review"); 
+    console.log(`my movie id for which i want to delete the review is ${movieId}`);
+
+    const movieCollection = await movies();
+    let movie = await movieCollection.findOne({_id: new ObjectId(movieId)});
+    console.log(`movie for which review is to be deleted is`);
+    console.log(movie);
+    console.log("__________________________");
+    if(!movie)  {
+        throw 'movie not found';
+    }
+    
+    const reviewIndex = movie.reviews.findIndex((review)    => review.userId === userId);
+
+    if(reviewIndex === -1)  {
+        throw 'Review could not be found';
+    }
+    const removeReview = movie.reviews.splice(reviewIndex, 1)[0];
+
+    const totalRatings = movie.reviews.reduce((sum, review) =>  sum + review.rating, 0);
+    movie.overall_rating = movie.reviews.length > 0? totalRatings/movie.reviews.length : 0;
+
+    const updatedMovie = await movieCollection.updateOne(
+        {_id: new ObjectId(movieId)},
+        {$set: {
+            reviews: movie.reviews,
+            overall_rating: movie.overall_rating
+        }
+        }
+    );
+
+    console.log("review has been successfully deleted");
+    return updatedMovie;
+}
 
 export  {
     searchMovies,
     getSingleMovies,
-    addReview
+    addReview, 
+    deleteReview
 };
