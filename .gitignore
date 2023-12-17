@@ -1,6 +1,4 @@
 package-lock.json
 node_modules
-uploads
-seed.js
 seedGenerator.py
 .vscode/launch.json
