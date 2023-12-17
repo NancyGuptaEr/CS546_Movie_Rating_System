@@ -14,7 +14,12 @@ let exportedMethods = {
 
         const userData = await users();
         const movieData = await movies();
-        
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+
+        if(!userExists){
+            throw `User doesn't exists`;
+        }
+
         const watchListProjection = {_id: 0, watchList: 1};
         const movieListProjection = {_id: 1, title: 1, thumbnail: 1, overall_rating: 1};
 
@@ -108,6 +113,12 @@ let exportedMethods = {
         }
         
         const userData = await users();
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+
+        if(!userExists){
+            throw `User doesn't exists`;
+        }
+
         const genreProjection = {_id : 1, preferGenre: 1, maxContentRating: 1}
         let userPreference = await userData.find({_id: new ObjectId(userId)}).project(genreProjection).toArray(); //First we'll need to get user genres 
         console.log(`User Info: `);
@@ -267,13 +278,22 @@ let exportedMethods = {
     },
     async checkWatchListExists(watchListName, userId){
         watchListName = please.checkStr(watchListName, "Watch List Name");
-        userId = please.checkStr(userId);
+        userId = please.checkStr(userId, "User Id");
 
         if(!ObjectId.isValid(userId)){
             throw `User ID isn't valid object ID`;
         }
-
+        if(watchListName.length > 25){
+            throw `watchlist name can't be greater than 25 characters`;
+        }
+        if(watchListName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
         const userData = await users();
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+        if(!userExists){
+            throw `User doesn't exists`;
+        }
         const userInfo = await userData.findOne({_id: new ObjectId(userId),[`watchList.${watchListName}`]: {$exists: true}});
         // console.log(`userInfo =:`);
         // console.log(userInfo);
@@ -291,7 +311,12 @@ let exportedMethods = {
         if(!ObjectId.isValid(userId)){
             throw `User ID isn't valid object ID`;
         }
-        
+        if(watchListName.length > 25){
+            throw `watchlist name can't be greater than 25 characters`;
+        }
+        if(watchListName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
         const userData = await users();
         const userExists = await userData.findOne({_id: new ObjectId(userId)});
         if(!userExists){
@@ -318,6 +343,12 @@ let exportedMethods = {
            if (!ObjectId.isValid(userId)){
             throw  `Object id for User is invalid`;
            }
+           if(watchListName.length > 25){
+            throw `watchlist name can't be greater than 25 characters`;
+            }
+            if(watchListName.length < 1){
+                throw `watchlist name can't be less than 1 character`;
+            }
            const userData = await users();
            const movieData = await movies();
            const userInfo = await userData.findOne({_id: new ObjectId(userId)});
@@ -355,6 +386,95 @@ let exportedMethods = {
             }
             console.log(movieInsertedInWatchList);
             return true;
+    },
+    async removeMovieFromWatchList(userId, movieId, watchListName){
+
+        userId = please.checkStr(userId, "user ID");
+        movieId = please.checkStr(movieId, "Movie ID")
+        watchListName = please.checkStr(watchListName,"Watch list name");
+        if(!ObjectId.isValid(userId)){
+            throw `UserID isn't a valid object ID`;
+        }
+        if(!ObjectId.isValid(movieId)){
+            throw  `MovieID isn't a valid object ID`;
+        }
+        if(watchListName.length > 25){
+            throw `watchlist name can't be greater than 25 characters`;
+        }
+        if(watchListName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
+        const userData = await users();
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+
+        if(!userExists){
+            throw `User doesn't exists`;
+        }
+        let watchListExists = this.checkWatchListExists(watchListName, userId);
+        if(!watchListExists){
+            throw `WatchLists doesn't exists`;
+        }
+        
+        const movieExistsinWatchList = await userData.findOne({_id: new ObjectId(userId)},{watchList: watchListName});
+        let moviesInWatchList = movieExistsinWatchList.watchList[watchListName];
+        let doesMovieExists = false;
+           for (let i=0; i < moviesInWatchList.length; i++ ){
+                if(movieId.toString()===moviesInWatchList[i].toString()){
+                    doesMovieExists = true;
+                    break;
+                }
+           }
+        if (!doesMovieExists){
+            throw `Movie isn't present in the watchlist`;
+        }
+        let removeMovie = { $pull: {} };
+        removeMovie.$pull[`watchList.${watchListName}`] = new ObjectId(movieId);
+
+        const result = await userData.updateOne({ _id: new ObjectId(userId)}, removeMovie);
+        console.log(`ObjectId removed from ${watchListName} array`, result);
+        if(!result.acknowledged){
+            throw `There was a problem deleting movie from the db`;
+        }
+        return true;
+    },
+
+    async removeWatchList(userId, watchListName){
+
+        userId = please.checkStr(userId, "User ID");
+        watchListName = please.checkStr(watchListName, "Watch list name");
+
+        if(!ObjectId.isValid(userId)){
+            throw `User ID isn't valid object ID`;
+        }
+        if(watchListName.length > 25){
+            throw `watchlist name can't be greater than 25 characters`;
+        }
+        if(watchListName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
+        const userData = await users();
+        const userExists = await userData.findOne({_id: new ObjectId(userId)});
+
+        if(!userExists){
+            throw `User doesn't exists`;
+        }
+
+        let watchListExists = await this.checkWatchListExists(watchListName, userId);
+        if(!watchListExists){
+            throw `watch list doesn't exists`;
+        }
+
+        const removeWatchList = { $unset: {} };
+        removeWatchList.$unset[`watchList.${watchListName}`] = ""; // Unset the watchlist
+
+        const result = await userData.updateOne({ _id: new ObjectId(userId) }, removeWatchList);
+
+        if(!result.acknowledged){
+            throw `There was a problem removing the watchList`;
+        }
+
+       return true;
+
     }
 }
 

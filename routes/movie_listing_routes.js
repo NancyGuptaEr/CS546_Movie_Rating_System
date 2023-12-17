@@ -6,7 +6,7 @@ const router = Router();
 router
     .route('/')
     .get(async (req, res) => {
-       
+       try{
         // console.log(top10onCineRating);
         if(req.session.user){
             console.log(`we do have a user session....`);
@@ -37,6 +37,10 @@ router
             console.log(`______________________________________________`);
             res.render('movieListing',{title: 'CineRatings', Genres: moviesByGenre, Top10: top10onCineRating});
         }
+    }
+    catch(error){
+        res.render('error',{errors: error});
+    }
     })
     .post(async (req,res)=>{
 
@@ -48,6 +52,21 @@ router
         .post(async (req, res) => {
             console.log(`\n we are in post of add to watchlist route`);
             console.log(req.body);
+            try{
+            let userId = req.body.userId;
+            let movieId = req.body.movieId;
+            let watchListName = req.body.watchlistName;
+            const insertMovieInWatchList = await movieListingDataFuncs.addMovieToWatchList(movieId,watchListName,userId);
+            if(!insertMovieInWatchList){
+                console.log(`there was a problem inserting movie to the watchlist`);
+            }
+            else{
+                console.log(`return from db: ${insertMovieInWatchList}`);
+            }
+        }
+        catch(error){
+            res.render('error',{errors: error});
+        }
         })
 
 export default router;

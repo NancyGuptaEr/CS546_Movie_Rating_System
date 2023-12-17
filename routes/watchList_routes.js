@@ -1,0 +1,128 @@
+import { Router } from "express";
+import { movieListingDataFuncs } from "../data/index.js";
+import { compareSync } from "bcrypt";
+import * as please from '../helper.js';
+import { ObjectId } from "mongodb";
+
+const router = Router();
+
+router.route('/').get(async (req,res) => {
+    try{
+    if(req.session.user){
+        const userInfo = req.session.user;
+        let userId = userInfo._id;
+        userId = please.checkStr(userId,"User Id");
+        if(!ObjectId.isValid(userId)){
+            throw `userId isn't a valid objectID`;
+        }
+
+        console.log(`user id of the user logged in: ${userId}`);
+
+        const movieInfo = await movieListingDataFuncs.getWatchList(userId);
+        console.log(`printing movieInfo routes...............................`);
+        console.log(movieInfo);
+        let newMovieInfo = movieInfo;
+        for(let watchlist in newMovieInfo){
+            console.log(`watchlist: ${watchlist}`);
+            for(let i=0; i < newMovieInfo[watchlist].length; i++){
+                newMovieInfo[watchlist][i]['watchListName'] = watchlist;
+            }
+            
+        }
+        console.log(`printing new movie info #####################################`);
+        console.log(newMovieInfo);
+        // res.render('watchList',)
+        res.render('watchList', {UserWatchListMovies: newMovieInfo, userId: userId});
+    }
+}
+catch(error){
+    res.render('error',{errors: error});
+}
+}).post(async(req, res)=>{
+    
+})
+
+router.route('/remove-Watch-list').post(async (req,res) => {
+
+    console.log(`entered for post routes for removing watchlist`);
+    try{
+    if(req.session.user){
+        const deletionInfo = req.body;
+        let userId = req.session.user._id;
+        let watchListName = req.body.watchlistName;
+        userId = please.checkStr(userId,"User Id");
+        if(!ObjectId.isValid(userId)){
+            throw `userId isn't a valid objectID`;
+        }
+        watchListName = please.checkStr(watchListName);
+        if(watchListName.length > 25 ){
+            throw `watchlist name can't be greater than 25 characters`
+        }
+        if(watchListName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
+
+        console.log(`userid :${userId}, watchListname: ${watchListName}`);
+
+        const removeWatchList = await movieListingDataFuncs.removeWatchList(userId, watchListName);
+
+        if(removeWatchList){
+            console.log(`watchlist deletion successfull reload page `);
+        }
+    }
+    res.redirect('/watchlist');
+    
+}
+catch(error){
+    res.render('error',{errors: error});
+}
+})
+router.route('/remove-movie-watchList').post(async(req, res)=> {
+    console.log(`movie deletion route......`);
+    console.log(req.body);
+    try{
+    let userId = req.body.userId;
+    let movieId = req.body.movieId;
+    let watchlistName = req.body.watchlistName;
+
+    
+
+    watchlistName = please.checkStr(watchlistName);
+        if(watchlistName.length > 25 ){
+            throw `watchlist name can't be greater than 25 characters`
+        }
+        if(watchlistName.length < 1){
+            throw `watchlist name can't be less than 1 character`;
+        }
+    console.log(`userId: ${userId}, movieid: ${movieId}, watchlistName: ${watchlistName}`);
+
+    const deletedMovie = await movieListingDataFuncs.removeMovieFromWatchList(userId, movieId, watchlistName);
+
+    if(deletedMovie){
+        console.log(`movie has been deleted reload`);
+    }
+    res.redirect('/watchlist');
+}
+catch(error){
+    res.render('error',{errors: error});
+}
+})
+
+router.route('/create-watchlist').post(async(req, res)=> {
+    try{
+    let userId = req.session.user._id;
+    console.log(`userid: ${userId}, watchlistName: ${req.body.watchlistName}`);
+    
+    const watchListName = req.body.watchlistName;
+    const watchlistData = await movieListingDataFuncs.addWatchList(watchListName, userId);
+    if(watchlistData){
+        console.log(`watchlist creation complete reload page`);
+    }
+    res.redirect('/watchlist');
+
+}
+catch(error){
+    res.render('error', {errors: error});
+}
+})
+export default router;

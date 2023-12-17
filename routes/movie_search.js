@@ -3,6 +3,9 @@ const router = Router();
 import * as helpers from "../helper.js";
 import * as searchMovies from '../data/search_movie.js';
 
+import { movies } from "../config/mongoCollections.js";
+import { ObjectId } from "mongodb";
+
 router.route('/').get(async (req, res)   =>  {
     console.log("now i will try to open the homepage");
     try {
@@ -54,42 +57,95 @@ router.route('/:MovieId')
         
         try {
             req.params.movieName = helpers.checkId(req.params.MovieId);
+            let isLoggedIn ;
+            let currentUserId; 
+            let showEditReviewSection = false;
+            let CurrentUserRating;
+            let CurrentUserReview;
 
-            console.log("i have done error checking in routes");
+            if(req.session.user){
+                isLoggedIn = true;
+                let emailAddress = req.session.user.emailAddress;
+                console.log("i have done error checking in routes: emailAddressof useris: "+emailAddress);
+                let movie = await searchMovies.getSingleMovies(req.params.MovieId);
+            
+                for (let i = 0; i < movie.reviews.length; i++){
+                    if(movie.reviews[i].userId === emailAddress){
+                        movie.reviews[i]['showEditReviewSection'] = true;
+                        CurrentUserRating = movie.reviews[i].rating;
+                        CurrentUserReview = movie.reviews[i].review;
+                    }
+                    else{
+                        movie.reviews[i]['showEditReviewSection'] = false;
+                    }
+                }
+                //////////////////// Add showEditReviewSection latest boolean value in every review by every user  ////////
+                console.log(`movie info:###########################################`) 
+                console.log(movie);
+                res.render("individualMovie", {
+                    _id: movie._id,
+                    title: movie.title, 
+                    genre: movie.genre, 
+                    releaseDate: movie.releaseDate, 
+                    director: movie.artists.director, 
+                    actors: movie.artists.actors, 
+                    writer: movie.artists.writer, 
+                    producer: movie.artists.producer, 
+                    mpa: movie.contentRating, 
+                    thumbnail: movie.thumbnail, 
+                    overall_rating: movie.overall_rating, 
+                    reviews: movie.reviews,
+                    emailAddress: emailAddress,
+                    CurrentUserRating: CurrentUserRating,
+                    CurrentUserReview: CurrentUserReview,
+                    isLoggedIn: isLoggedIn
+                });
+            }
+            else{
+                isLoggedIn = false;
+                showEditReviewSection = false;
+                const movie = await searchMovies.getSingleMovies(req.params.MovieId);
+                console.log(movie);
+                res.render("individualMovie", {
+                    title: movie.title, 
+                    genre: movie.genre, 
+                    releaseDate: movie.releaseDate, 
+                    director: movie.artists.director, 
+                    actors: movie.artists.actors, 
+                    writer: movie.artists.writer, 
+                    producer: movie.artists.producer, 
+                    mpa: movie.contentRating, 
+                    thumbnail: movie.thumbnail, 
+                    overall_rating: movie.overall_rating, 
+                    reviews: movie.reviews,
+                    isLoggedIn: isLoggedIn
+                });
+            }
+            
 
+            
         }catch(e)   {
-            return res.status(400).json({error: e});
-        }
-
-        try {
-            const movie = await searchMovies.getSingleMovies(req.params.MovieId);
-            console.log(movie);
-            res.render("individualMovie", {
-                title: movie.title, 
-                genre: movie.genre, 
-                releaseDate: movie.releaseDate, 
-                director: movie.artists.director, 
-                actors: movie.artists.actors, 
-                writer: movie.artists.writer, 
-                producer: movie.artists.producer, 
-                mpa: movie.contentRating, 
-                thumbnail: movie.thumbnail, 
-                overall_rating: movie.overall_rating, 
-                reviews: movie.reviews});
-        }catch(e)   {
+            console.log(`the Error is: ${e}`);
             res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
         }
     })
     .post(async (req, res)  =>  {
         console.log("i have entered routes to submit a review");
+        console.log(`userID is ${req.session.user.emailAddress}`);
+        console.log(req.body);
         //write code here to submit a review
-        let userId = req.body.userID;
-        console.log(`user id is ${userId}`);
-        let rating = req.body.rating;
+        let userId = req.session.user.emailAddress;
+        console.log(`userId: ${userId}`);
+        console.log(`rating: ${req.body.ratingValue}`);
+        console.log(`review is: ${req.body.reviewValue}`)
+        console.log(`movie id: ${req.body.movieId}`);
+    
+
+        let rating = req.body.ratingValue;
         console.log(`rating is ${rating}`);
-        let review = req.body.review;
+        let review = req.body.reviewValue;
         console.log(`review is ${review}`);
-        let movieId = req.params.MovieId;
+        let movieId = req.body.movieId;
         console.log(`movie id is ${movieId}`);
         try {
             userId = helpers.isValidEmail(userId);
@@ -100,29 +156,21 @@ router.route('/:MovieId')
             console.log(`review is ${review}`);
             movieId = helpers.checkId(movieId);
             console.log(`movie id is ${movieId}`);
+            if(!ObjectId.isValid(movieId)){
+                throw `movieId is not proper ObjectID`;
+            }
             console.log("i have done all input validation in routes");
-        
+            
             const movie = await searchMovies.addReview(movieId, userId, rating, review);
+            console.log(`_________________________________________`)
             console.log(movie);
-            res.render("individualMovie", {
-                title: movie.title, 
-                genre: movie.genre, 
-                releaseDate: movie.releaseDate, 
-                director: movie.artists.director, 
-                actors: movie.artists.actors, 
-                writer: movie.artists.writer, 
-                producer: movie.artists.producer, 
-                mpa: movie.contentRating, 
-                thumbnail: movie.thumbnail, 
-                overall_rating: movie.overall_rating, 
-                reviews: movie.reviews, 
-                userId: movie.reviews.userID, 
-                rating: movie.reviews.rating, 
-                review: movie.reviews.review, 
-                ts: movie.reviews.ts});
-        }catch(e)   {
+        
+        res.redirect(`/movies/${movieId}`);
+        }
+        catch(e)   {
             res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
         }
     });
+
 
 export default router;
