@@ -33,7 +33,8 @@ const upload = multer({ storage: storage });
 adminMoviesRouter.route("/").get(isAdminAuthenticated, async (req, res) => {
   try {
     const allMovies = await adminMovies.getAll();
-    return res.render("admin", { allMovies });
+    let isLoggedIn = true;
+    return res.render("admin", { allMovies, isLoggedIn });
   } catch (e) {
     return res.json({ error: "there are no movies in database" });
   }
@@ -57,7 +58,8 @@ adminMoviesRouter
       "thriller",
       "western",
     ];
-    res.render("uploadMovie", { allGenres });
+    let isLoggedIn = true;
+    res.render("uploadMovie", { allGenres,isLoggedIn });
   })
   .post(isAdminAuthenticated, upload.single("image"), async (req, res) => {
     const data = req.body;
@@ -177,7 +179,8 @@ adminMoviesRouter
       const genresWithSelection = allGenres.map((genre) => {
         return { name: genre, selected: movie.genre.includes(genre) };
       });
-      res.render("updateMovie", { movie, genresWithSelection });
+      let isLoggedIn = true;
+      res.render("updateMovie", { movie, genresWithSelection, isLoggedIn });
     } catch (error) {
       res.status(404).send("Movie not found");
     }
@@ -311,7 +314,8 @@ adminMoviesRouter
       const allFlaggedReviews = await getMoviesByFlaggedTimes();
       console.log(`printing allflaggedreviews for rendering on webpage`);
       console.log(allFlaggedReviews)
-      return res.render("flaggedReviews", { allFlaggedReviews });
+      let isLoggedIn = true;
+      return res.render("flaggedReviews", { allFlaggedReviews, isLoggedIn });
     } catch (e) {
       return res.status(404).json({ error: e });
     }

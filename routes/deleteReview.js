@@ -35,7 +35,7 @@ router.route('/').post(async(req, res)  =>  {
     res.redirect(`/movies/${movieId}`);
     }
     catch(e)   {
-        res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
+        res.status(400).render("error", {errors: e, title: "Error Occured!"});
     }
 });
 

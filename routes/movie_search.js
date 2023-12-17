@@ -12,19 +12,23 @@ router.route('/').get(async (req, res)   =>  {
     try {
         res.render("home", {title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies"});
     }catch(e)   {
-        res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
+        res.status(400).render("error", {errors: e, title: "Error Occured!"});
     }
     })
     .post(async (req, res)  =>  {
         console.log("i have entered the post routes");
         let movieName = xss(req.body.Search);
         console.log(movieName);
+        let isLoggedIn = false;
+        if(req.session.user){
+            isLoggedIn = true;
+        }
         try {
             console.log(`movie name before validation is ${movieName}`);
             movieName = helpers.checkStr(movieName, "Movie Name");
             console.log(`movie name after validation is ${movieName}`);
         }catch(error)   {
-            res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
+            res.status(404).render("error", {errors: error, title: "Error Occured!"});
         }
         try {
             let searchedMovie = await searchMovies.searchMovies(movieName);
@@ -44,11 +48,11 @@ router.route('/').get(async (req, res)   =>  {
             
             
             if(searchedMovie.length === 0){
-                res.render("searchpage", {MovieId: MovieId, title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies", movies: searchedMovie, error: "No results found"});
+                res.render("searchpage", {MovieId: MovieId, title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies", movies: searchedMovie, error: "No results found", isLoggedIn});
             }
-            res.render("searchpage", {title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies", movies: searchedMovie});
+            res.render("searchpage", {title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies", movies: searchedMovie, isLoggedIn});
         }catch(e)   {
-            res.status(404).render("searchpage", {title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies",movies: [], error: e});
+            res.status(400).render("searchpage", {title: "CineRatings: Ratings, Reviews, and Where to Watch the Best Movies",movies: [], error: e});
         }
         });
 
@@ -130,7 +134,7 @@ router.route('/:MovieId')
             
         }catch(e)   {
             console.log(`the Error is: ${e}`);
-            res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
+            res.status(400).render("error", {errors: e, title: "Error Occured!"});
         }
     })
     .post(async (req, res)  =>  {
@@ -172,7 +176,7 @@ router.route('/:MovieId')
         res.redirect(`/movies/${movieId}`);
         }
         catch(e)   {
-            res.status(404).render("error", {errors: "Internal Server Error", title: "Error Occured!"});
+            res.status(400).render("error", {errors: e, title: "Error Occured!"});
         }
     });
 

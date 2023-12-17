@@ -41,11 +41,11 @@ router.route('/').get(async (req,res) => {
         }
         
         // res.render('watchList',)
-        res.render('watchList', {title: 'My Watchlist', UserWatchListMovies: newMovieInfo, userId: userId, isWatchlistEmpty: isWatchlistEmpty});
+        res.render('watchList', {title: 'My Watchlist', UserWatchListMovies: newMovieInfo, userId: userId, isWatchlistEmpty: isWatchlistEmpty, isLoggedIn: true});
     }
 }
 catch(error){
-    res.render('error',{errors: error});
+    res.status(400).render('error',{errors: error});
 }
 }).post(async(req, res)=>{
     
@@ -83,7 +83,7 @@ router.route('/remove-Watch-list').post(async (req,res) => {
     
 }
 catch(error){
-    res.render('error',{errors: error});
+    res.status(400).render('error',{errors: error});
 }
 })
 router.route('/remove-movie-watchList').post(async(req, res)=> {
@@ -113,7 +113,7 @@ router.route('/remove-movie-watchList').post(async(req, res)=> {
     res.redirect('/watchlist');
 }
 catch(error){
-    res.render('error',{errors: error});
+    res.status(400).render('error',{errors: error});
 }
 })
 
@@ -131,7 +131,7 @@ router.route('/create-watchlist').post(async(req, res)=> {
 
 }
 catch(error){
-    res.render('error', {errors: error});
+    res.status(400).render('error', {errors: error});
 }
 })
 export default router;

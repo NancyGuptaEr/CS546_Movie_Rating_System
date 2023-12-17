@@ -134,18 +134,11 @@ app.use('/watchlist',(req, res, next)=> {
       next();
     }
   }
-})
-app.use('/home',(req, res, next)=> {
-  if(req.method === "GET"){
-    if(req.session.user){
-      if(req.session.user.isAdmin)
-        res.redirect('/movies');
-    }
-    else{
-      next();
-    }
+  else{
+    next();
   }
 })
+
 app.use('/logout', (req, res, next) => {
   if (req.method === 'GET') {
       if (req.session.user) {

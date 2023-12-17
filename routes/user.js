@@ -20,7 +20,7 @@ const upload = multer({ storage: storage });
 router.route('/profile')
     .get(async (req, res) => {
         const user = await userDataFuncs.getUser(req.session.user._id);
-        res.render('userprofile', { user: user, title: 'profile', hasError: false })
+        res.render('userprofile', { user: user, title: 'profile', hasError: false, isLoggedIn: true })
     })
     .post(upload.single("profilePicInput"), async (req, res) => {
         let postData = req.body;
@@ -116,7 +116,7 @@ router.route('/profile')
         try {
             const success = await userDataFuncs.updateUser(req.session.user._id, postData.profilePicInput, postData.emailAddressInput, postData.ageInput, postData.roleInput, postData.preferGenreInput, postData.preferContentInput);
             if (!success) {
-                return res.status(500).render("userprofile", { authUser: "", title: 'profile', hasError: true, error: "Internal Server Error", user: { profileImage: postData.profilePicInput, emailAddress: postData.emailAddressInput, age: postData.ageInput } });
+                return res.status(500).render("userprofile", { authUser: "", title: 'profile', hasError: true, error: "Internal Server Error", user: { profileImage: postData.profilePicInput, emailAddress: postData.emailAddressInput, age: postData.ageInput,isLoggedIn:true } });
             }
             return res.render("userprofile", { authUser: "", title: 'profile', hasError: false, user: success })
         } catch (e) {

@@ -11,6 +11,7 @@
 </head>
 
 <body>
+  <p id="errors"></p>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       {{!-- <a class="navbar-brand" href="#">CineRatings</a> --}}
@@ -21,11 +22,13 @@
     <div class="search-bar">
         <form action="/movies" class="searchMovies" method="post" id="search-form">
         <input type="text" name="Search" id="searchInput">
+
          <button type="submit"><img class="icon" src="/public/Images/microscope_icon.jpg" alt="Search"></button>
          </form> 
+         
          <script src="/public/js/search_form.js"></script>
    </div>
-
+  
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {{#if authUser}}
@@ -68,13 +71,24 @@
       </form>
         {{/if}}
         {{else}}
+        
+        
+        {{#if isLoggedIn}}
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/users/profile">my profile</a>
+        </li>
+        {{else}}
         <li class="nav-item">
           <a class="nav-link" href="/register">Signup</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/login">Login</a>
         </li>
-        <script src="/public/js/client_side_validation.js"></script>
+        {{/if}}
+        
         {{/if}}
       </ul>
     </div>

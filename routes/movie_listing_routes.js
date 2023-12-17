@@ -26,7 +26,7 @@ router
                 // console.log(`printing top10oncineratings withoutloggin `);
                 // console.log(top10onCineRating);
                 // console.log(`______________________________________________`);
-                res.render('movieListing',{title: 'CineRatings', Genres: moviesByGenre, Top10: top10onCineRating});
+                res.render('movieListing',{title: 'CineRatings', Genres: moviesByGenre, Top10: top10onCineRating, isLoggedIn: true});
             }
             // console.log(movieInfo[1]);
             const moviesByGenre = movieInfo[0];
@@ -49,11 +49,11 @@ router
             console.log(`printing top10oncineratings withoutloggin `);
             console.log(top10onCineRating);
             console.log(`______________________________________________`);
-            res.render('movieListing',{title: 'My Movie Page', Genres: moviesByGenre, Top10: top10onCineRating});
+            res.render('movieListing',{title: 'My Movie Page', Genres: moviesByGenre, Top10: top10onCineRating,isLoggedIn: false});
         }
     }
     catch(error){
-        res.render('error',{errors: error});
+        res.status(400).render('error',{errors: error});
     }
     })
     .post(async (req,res)=>{
@@ -79,7 +79,7 @@ router
             }
         }
         catch(error){
-            res.render('error',{errors: error});
+            res.status(400).render('error',{errors: error});
         }
         })
 
