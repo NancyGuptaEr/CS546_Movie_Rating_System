@@ -1,10 +1,20 @@
 # CS546_Movie_Rating_System
 CS_546_Group_21
 
-Adding new line to the file, hope this works
+how to run the project
 
-Adding new line, hope this goes in development branch as well
 
-Adding yet another line for development branch
+node seed.js
+npm start
 
-Test Test Test.....!!!
+once the sites up you can go to login but without login youcan search through the website
+
+sample login password:
+
+whatsapp@samsung.com
+Secure@123
+
+for admin you'll need to register
+
+github link
+https://github.com/NancyGuptaEr/CS546_Movie_Rating_System/
