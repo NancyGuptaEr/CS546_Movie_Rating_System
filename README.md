@@ -12,7 +12,7 @@ What you need to do to run this project.. First seed data to database using foll
 
 User Login Details Email : whatsapp@samsung.com password : Secure@123
 
-Admin Login Details Email : abc@gmail.com Password : Qwerty1!
+Admin Login Details Email : Register as an admin and create admin account
 
 Admin route : http://localhost:3000/admin
 
