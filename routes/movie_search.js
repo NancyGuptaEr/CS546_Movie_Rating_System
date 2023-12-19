@@ -16,21 +16,20 @@ router.route('/').get(async (req, res)   =>  {
     }
     })
     .post(async (req, res)  =>  {
-        console.log("i have entered the post routes");
-        let movieName = xss(req.body.Search);
-        console.log(movieName);
+        //console.log("i have entered the post routes");
         let isLoggedIn = false;
         if(req.session.user){
             isLoggedIn = true;
         }
         try {
+        let movieName = xss(req.body.Search);
+        //console.log(movieName);
+        
+        
             console.log(`movie name before validation is ${movieName}`);
             movieName = helpers.checkStr(movieName, "Movie Name");
             console.log(`movie name after validation is ${movieName}`);
-        }catch(error)   {
-            res.status(404).render("error", {errors: error, title: "Error Occured!"});
-        }
-        try {
+        
             let searchedMovie = await searchMovies.searchMovies(movieName);
             console.log(`searched movie from database is`);
             console.log(searchedMovie);
@@ -138,24 +137,25 @@ router.route('/:MovieId')
         }
     })
     .post(async (req, res)  =>  {
-        console.log("i have entered routes to submit a review");
-        console.log(`userID is ${req.session.user.emailAddress}`);
-        console.log(req.body);
+        // console.log("i have entered routes to submit a review");
+        // console.log(`userID is ${req.session.user.emailAddress}`);
+        // console.log(req.body);
         //write code here to submit a review
-        let userId = xss(req.session.user.emailAddress);
-        console.log(`userId: ${userId}`);
-        console.log(`rating: ${req.body.ratingValue}`);
-        console.log(`review is: ${req.body.reviewValue}`)
-        console.log(`movie id: ${req.body.movieId}`);
+        
+        // console.log(`userId: ${userId}`);
+        // console.log(`rating: ${req.body.ratingValue}`);
+        // console.log(`review is: ${req.body.reviewValue}`)
+        // console.log(`movie id: ${req.body.movieId}`);
     
-
+        try {
+        let userId = xss(req.session.user.emailAddress);
         let rating = xss(req.body.ratingValue);
         console.log(`rating is ${rating}`);
         let review = xss(req.body.reviewValue);
         console.log(`review is ${review}`);
         let movieId = xss(req.body.movieId);
         console.log(`movie id is ${movieId}`);
-        try {
+        
             userId = helpers.isValidEmail(userId);
             console.log(`user id is ${userId} after checking`);
             rating = helpers.isValidRating(rating);

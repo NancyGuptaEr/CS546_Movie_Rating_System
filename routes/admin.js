@@ -33,8 +33,8 @@ const upload = multer({ storage: storage });
 adminMoviesRouter.route("/").get(isAdminAuthenticated, async (req, res) => {
   try {
     const allMovies = await adminMovies.getAll();
-    let isLoggedIn = true;
-    return res.render("admin", { allMovies, isLoggedIn });
+    let  adminLoggedIn = true;
+    return res.render("admin", { allMovies, adminLoggedIn, title: "My Admin Page" });
   } catch (e) {
     return res.json({ error: "there are no movies in database" });
   }
@@ -58,8 +58,8 @@ adminMoviesRouter
       "thriller",
       "western",
     ];
-    let isLoggedIn = true;
-    res.render("uploadMovie", { allGenres,isLoggedIn });
+    let adminLoggedIn = true;
+    res.render("uploadMovie", { allGenres,adminLoggedIn, title: "My Admin Page" });
   })
   .post(isAdminAuthenticated, upload.single("image"), async (req, res) => {
     const data = req.body;
@@ -179,8 +179,8 @@ adminMoviesRouter
       const genresWithSelection = allGenres.map((genre) => {
         return { name: genre, selected: movie.genre.includes(genre) };
       });
-      let isLoggedIn = true;
-      res.render("updateMovie", { movie, genresWithSelection, isLoggedIn });
+      let  adminLoggedIn = true;
+      res.render("updateMovie", { movie, genresWithSelection,  adminLoggedIn, title: "My Admin Page" });
     } catch (error) {
       res.status(404).send("Movie not found");
     }
@@ -312,10 +312,10 @@ adminMoviesRouter
   .get(isAdminAuthenticated, async (req, res) => {
     try {
       const allFlaggedReviews = await getMoviesByFlaggedTimes();
-      console.log(`printing allflaggedreviews for rendering on webpage`);
-      console.log(allFlaggedReviews)
-      let isLoggedIn = true;
-      return res.render("flaggedReviews", { allFlaggedReviews, isLoggedIn });
+      // console.log(`printing allflaggedreviews for rendering on webpage`);
+      // console.log(allFlaggedReviews)
+      let adminLoggedIn = true;
+      return res.render("flaggedReviews", { allFlaggedReviews, adminLoggedIn, title: "My Admin Page" });
     } catch (e) {
       return res.status(404).json({ error: e });
     }
@@ -324,10 +324,10 @@ adminMoviesRouter
 adminMoviesRouter
   .route("/flaggedReviews/:reviewId")
   .delete(isAdminAuthenticated, async (req, res) => {
-    console.log(`adminMoviesRouter/delete called from webpage`);
-    console.log(req.params);
+    // console.log(`adminMoviesRouter/delete called from webpage`);
+    // console.log(req.params);
     let reviewId = xss(req.params.reviewId);
-    console.log(`contnets in reviewId: ${reviewId}`);
+    // console.log(`contnets in reviewId: ${reviewId}`);
     try {
 
       reviewId = checkStr(reviewId, "reviewId");
@@ -337,10 +337,10 @@ adminMoviesRouter
       return res.status(400).json({ error: e });
     }
     try {
-      console.log(`calling removebyflaggedtimes db function`)
+      // console.log(`calling removebyflaggedtimes db function`)
       const deleteInfo = await removeByFlaggedTimes(reviewId);
       if (!deleteInfo) throw "deleting failed";
-      return res.render("flaggedReviews");
+      return res.render("flaggedReviews", {title: "My Admin Page"});
     } catch (e) {
       return res.status(404).json({ error: e });
     }

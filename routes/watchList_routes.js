@@ -87,8 +87,8 @@ catch(error){
 }
 })
 router.route('/remove-movie-watchList').post(async(req, res)=> {
-    console.log(`movie deletion route......`);
-    console.log(req.body);
+    // console.log(`movie deletion route......`);
+    // console.log(req.body);
     try{
     let userId = xss(req.body.userId);
     let movieId = xss(req.body.movieId);

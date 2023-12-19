@@ -5,6 +5,8 @@ import moviesSearchRoute from "./movie_search.js";
 import userRoutes from './user.js';
 import watchListRoutes from './watchList_routes.js';
 import deleteReviewRoute from './deleteReview.js';
+import flagReviewRoute from './flaggedReview.js';
+
 const constructorMethod = (app) => {
     app.use('/', authRoutes);
     app.use("/admin", adminMoviesRouter);
@@ -15,6 +17,7 @@ const constructorMethod = (app) => {
     app.use("/movies",moviesSearchRoute);
     app.use('/watchlist', watchListRoutes);
     app.use("/deleteReview", deleteReviewRoute);
+    app.use('/flagReview', flagReviewRoute);
     app.use('*', (req, res) => {
 
         res.status(404).send("No such route exist.");

@@ -1,5 +1,6 @@
-import { movieListingDataFuncs, authDataFuncs, adminMovies } from "./data/index.js";
+import { movieListingDataFuncs, authDataFuncs, adminMovies, moviesSearch } from "./data/index.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
+
 
 const db = await dbConnection();
 
@@ -80,9 +81,10 @@ async function addMovieData(){
 
 }
 try{
-    let userInfo = await addUserData();
-    let MovieInfo = await addMovieData();
+    // let userInfo = await addUserData();
+    // let MovieInfo = await addMovieData();
 
+    let flagReview = await moviesSearch.flagTheReview('657fc466f6a41410769d6c1f', 'whatsapp@samsung.com','657fc465f6a41410769d6c14');
 }
 catch(error){
     console.log(`Error: ${error}`);

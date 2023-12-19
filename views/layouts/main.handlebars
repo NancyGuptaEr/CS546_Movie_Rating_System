@@ -72,22 +72,28 @@
         {{/if}}
         {{else}}
         
-        
-        {{#if isLoggedIn}}
-        <li class="nav-item">
-          <a class="nav-link" href="/logout">Logout</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/users/profile">my profile</a>
-        </li>
-        {{else}}
-        <li class="nav-item">
-          <a class="nav-link" href="/register">Signup</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Login</a>
-        </li>
-        {{/if}}
+        {{#if adminLoggedIn}}
+  <li class="nav-item">
+    <a class="nav-link" href="/logout">Logout</a>
+  </li>
+{{else}}
+  {{#if isLoggedIn}}
+    <li class="nav-item">
+      <a class="nav-link" href="/logout">Logout</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/users/profile">My Profile</a>
+    </li>
+  {{else}}
+    <li class="nav-item">
+      <a class="nav-link" href="/register">Signup</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/login">Login</a>
+    </li>
+  {{/if}}
+{{/if}}
+
         
         {{/if}}
       </ul>

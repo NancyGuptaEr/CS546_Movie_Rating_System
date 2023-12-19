@@ -1,6 +1,7 @@
 
 import { ObjectId } from "mongodb";
 import {movies} from "../config/mongoCollections.js";
+import { users } from "../config/mongoCollections.js";
 import * as helpers from "../helper.js";
 
 
@@ -39,11 +40,11 @@ const getSingleMovies = async(movieId)  =>  {
     console.log("i have entered movies in data file to fetch single movieS");
 
     movieId = helpers.checkId(movieId);
-    console.log(`movie id is ${movieId}`);
+    // console.log(`movie id is ${movieId}`);
     const movieCollection = await movies();
     const myMovie = await movieCollection.findOne({_id: new ObjectId(movieId)});
     console.log(`found movie name from collection`);
-    console.log(myMovie);
+    // console.log(myMovie);
 
     if(!myMovie)    {
         throw 'No movie found with that name';
@@ -74,29 +75,50 @@ const addReview = async(movieId, userId, rating, review)  =>  {
         throw 'could not find movie for which you want to submit the review';
     }
 
-    const existingUserIndex = movie.reviews.findIndex((user)  => user.userId === userId);
-    console.log(existingUserIndex);
+    // const existingUserIndex = movie.reviews.findIndex((user)  => user.userId === userId);
+    // console.log(existingUserIndex);
     const formattedDate = new Date().toISOString().split('T')[0];
     console.log(`formatted date is ${formattedDate}`);
-
-    if(existingUserIndex !== -1)    { // this means the review exists by that user Id
-        movie.reviews[existingUserIndex] = {userId, rating, review, ts: formattedDate};
-        // movie.Reviews = movie.Reviews.filter(user   =>  user.userId !== userId);
-    }else   {
-        movie.reviews.push({userId, rating, review, ts: formattedDate,flaggedTimes: 0});
+    let newObjectId = new ObjectId();
+    
+    if(movie.reviews && movie.reviews.length > 0)   {
+        const existingUserIndex = movie.reviews.findIndex((user)  => user.userId === userId);
+        console.log(existingUserIndex);
+        if(existingUserIndex !== -1)    {
+            movie.reviews[existingUserIndex] = {userId, rating, review, ts: formattedDate};
+        }else   {
+            movie.reviews.push({_id: newObjectId,userId, rating, review, ts: formattedDate, flaggedTimes: 0});
+        }
+        console.log("i have inserted the review in database");
+        const allRatings = movie.reviews.map((review)    => review.rating);
+        const totalRatings = allRatings.reduce((acc, curr)  =>  acc + curr, 0);
+        const newOverallRatings = ((totalRatings)/(movie.reviews.length)).toFixed(1);
+        movie.overall_rating = parseFloat(newOverallRatings);
+        console.log(`new rating after doing average is ${newOverallRatings}`);
+    }else{
+        movie.reviews = [{_id: newObjectId, userId, rating, review, ts: formattedDate, flaggedTimes: 0}];
+        movie.overall_rating = rating;
+        console.log("first review overall rating is now correct");
     }
+
+    // if(existingUserIndex !== -1)    { // this means the review exists by that user Id
+    //     movie.reviews[existingUserIndex] = {userId, rating, review, ts: formattedDate};
+    //     // movie.Reviews = movie.Reviews.filter(user   =>  user.userId !== userId);
+    // }else   {
+    //     movie.reviews.push({userId, rating, review, ts: formattedDate,flaggedTimes: 0});
+    // }
     
     console.log("i have inserted the review in database");
     
 
-    const allRatings = movie.reviews.map((review)    => review.rating);
-    const totalRatings = allRatings.reduce((acc, curr)  =>  acc+curr, 0);
-    let existingRating = movie.overall_rating || 0;
-    console.log(`existing rating is ${existingRating}`);
+    // const allRatings = movie.reviews.map((review)    => review.rating);
+    // const totalRatings = allRatings.reduce((acc, curr)  =>  acc + curr, 0);
+    // let existingRating = movie.overall_rating || 0;
+    // console.log(`existing rating is ${existingRating}`);
 
-    const newOverallRatings = ((totalRatings + existingRating)/(movie.reviews.length + 1)).toFixed(1);
-    movie.overall_rating = parseFloat(newOverallRatings);
-    console.log(`new rating after doing average is ${newOverallRatings}`);
+    // const newOverallRatings = ((totalRatings + existingRating)/(movie.reviews.length + 1)).toFixed(1);
+    // movie.overall_rating = parseFloat(newOverallRatings);
+    // console.log(`new rating after doing average is ${newOverallRatings}`);
 
     const updatedInfo = await movieCollection.findOneAndUpdate(
         {_id: new ObjectId(movieId)},
@@ -154,9 +176,142 @@ const deleteReview = async(userId, movieId) =>  {
     return updatedMovie;
 }
 
+const flagTheReview = async(movieID, userEmailId, flagUserId) => { //here userEmailId is userId in DB, flagUserId is id of the user who flagged the review
+
+    movieID = helpers.checkId(movieID);
+    userEmailId = helpers.isValidEmail(userEmailId)
+
+    console.log(`movieId is: ${movieID}, userEmailId AKA userID: ${userEmailId}`);
+
+    const movieCollection = await movies();
+    let movie = await movieCollection.findOne({_id: new ObjectId(movieID)});
+    //const isMovieExists = await this.getSingleMovies(movieID);
+
+    if(!movie){
+        throw `Movie not found`;
+    }
+    
+    const userData = await users();
+    const userProjection = {_id: 0, userId: 1}
+    // const isUserExists = await userData.findOne({emailAddress: userEmailId});
+    // // console.log(isUserExists);
+    // if(!isUserExists){
+    //     throw `User doesn't exists`;
+    // }
+
+    const ReviewExists = await movieCollection.findOne({_id: new ObjectId(movieID),"reviews.userId": userEmailId});
+
+    console.log(`ReviewExists`);
+    console.log(ReviewExists);
+    if(!ReviewExists){
+         throw `Review doesn't exists`;
+    }
+    const ifFlagUserExists = await userData.findOne({_id: new ObjectId(flagUserId)});
+    console.log(`printing ifflagusesrexits:`);
+    console.log(ifFlagUserExists)
+    if(!ifFlagUserExists){
+        throw `The user who flagged the reivew doesn't exists`;
+    }
+
+    let flaggedReviewId
+    for (let i=0; i < ReviewExists.reviews.length; i++){
+        if(ReviewExists.reviews[i].userId === userEmailId){
+            flaggedReviewId = new ObjectId(ReviewExists.reviews[i]._id);
+        }
+    }
+    console.log(`flaggedReviewId: ${flaggedReviewId}_____________________________________________________`)
+    const flaggedReviewsFieldExists = await userData.findOne({ "_id": new ObjectId(flagUserId), "flaggedReviews": { $exists: true } });
+    if(flaggedReviewsFieldExists){
+    const flaggedReviewIdExistsInUserDoc = await userData.findOne({
+        "_id": new ObjectId(flagUserId),
+        "flaggedReviews": { $in: [new ObjectId(flaggedReviewId)] }
+      });
+      if(flaggedReviewIdExistsInUserDoc){
+        throw `500`;
+      }
+      else{
+        const incrementFlag = await movieCollection.findOneAndUpdate(
+                                                                    {_id: new ObjectId(movieID), "reviews.userId": userEmailId},
+                                                                    {$inc:{'reviews.$.flaggedTimes': 1}},
+                                                                    {returnDocument: 'after'}); 
+        }
+        const updateResult = await userData.updateOne(
+            { "_id": new ObjectId(flagUserId) },
+            {
+              $push: { "flaggedReviews": new ObjectId(flaggedReviewId) }
+            }
+          );
+          if(!updateResult){
+            throw `there was a problem adding reivew id in the user documnet`;
+          }
+    }
+    else{
+        const updatedUserDocument = await userData.updateOne(
+            { "_id": new ObjectId(flagUserId) },
+            {
+              $set: { "flaggedReviews": [flaggedReviewId] }
+            },
+            { upsert: true }
+          );
+
+          const incrementFlag = await movieCollection.findOneAndUpdate(
+            {_id: new ObjectId(movieID), "reviews.userId": userEmailId},
+            {$inc:{'reviews.$.flaggedTimes': 1}},
+            {returnDocument: 'after'});
+          if(!updatedUserDocument){
+            throw `there was a problem in adding review id to the flaggedReviews in user document`
+          }
+
+    }
+    //         if(!incrementFlag){
+    //             throw `there was a problem flagging the reivew`;
+    //         }
+    //     }
+    // if(!incrementFlag){
+    //     throw `there was a problem flagging the reivew`
+    // }
+    // // let flaggedReviewId = incrementFlag.reviews[0];
+    // let REVIEWS = incrementFlag.reviews;
+    
+    
+    // if (!flaggedReviewsFieldExists){
+        
+        
+         
+    // }
+    // else
+    // // console.log('updatedResult')
+    // // console.log(updatedResult);
+    // if(!flaggedReviewsFieldExists){
+        
+          
+    // }
+    // else{
+    //     const flaggedReviewIdExistsInUserDoc = await userData.findOne({ "_id": new ObjectId(flagUserId), "flaggedReviews": { $elemMatch: { $eq: flaggedReviewId } } });
+    //         if(!flaggedReviewIdExistsInUserDoc){
+    //             const updatedUserDocument = await userData.updateOne(
+    //                 { "_id": new ObjectId(flagUserId) },
+    //                 {
+    //                 $push: { "flaggedReviews": flaggedReviewId }
+    //                 }
+    //             );
+    //             if(!updatedUserDocument){
+    //                 throw `there was a problem in adding review id to the flaggedReviews in user document`
+    //             }
+    //         }
+    //         else{
+    //             throw `500`;
+    //         }
+            
+    // }
+
+    return true;
+}
+
 export  {
     searchMovies,
     getSingleMovies,
     addReview, 
-    deleteReview
+    deleteReview,
+    flagTheReview
 };
