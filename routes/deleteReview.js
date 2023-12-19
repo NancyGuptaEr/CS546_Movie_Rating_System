@@ -8,17 +8,18 @@ import xss from 'xss';
 
 
 router.route('/').post(async(req, res)  =>  {
-    console.log("i have entered routes to delete a review");
-    console.log(`userID is ${req.session.user.emailAddress}`);
-    console.log(req.body);
+    // console.log("i have entered routes to delete a review");
+    // console.log(`userID is ${req.session.user.emailAddress}`);
+    // console.log(req.body);
     //write code here to submit a review
+    try {
     let userId = xss(req.session.user.emailAddress);
-    console.log(`userId: ${userId}`);
-    console.log(`movie id: ${req.body.movieId}`);
+    // console.log(`userId: ${userId}`);
+    // console.log(`movie id: ${req.body.movieId}`);
 
     let movieId = xss(req.body.movieId);
-    console.log(`movie id is ${movieId}`);
-    try {
+    // console.log(`movie id is ${movieId}`);
+    
         userId = helpers.isValidEmail(userId);
         console.log(`user id is ${userId} after checking`);
         movieId = helpers.checkId(movieId);
